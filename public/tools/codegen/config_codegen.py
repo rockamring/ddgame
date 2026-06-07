@@ -325,7 +325,7 @@ def process_json_config(file_path: str, output_dir: str) -> None:
 def main():
     parser = argparse.ArgumentParser(description="配置表 -> C# 代码生成器")
     parser.add_argument("--input", "-i", required=True, help="输入文件 (.xlsx / .json)")
-    parser.add_argument("--output-dir", "-o", default="./Generated", help="输出目录")
+    parser.add_argument("--output-dir", "-o", default="client/GameFramework/Data/Generated", help="输出目录（默认 client/GameFramework/Data/Generated）")
     parser.add_argument("--target", choices=["client", "server", "all"], default="client",
                         help="目标平台（默认 client，按元数据过滤字段）")
 
