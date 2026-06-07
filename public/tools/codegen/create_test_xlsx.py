@@ -11,18 +11,18 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "configs")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "config", "client")
 
-HEADERS = ["id", "name", "type", "quality", "max_stack", "use_type", "description", "notes"]
-TYPES   = ["int", "string", "int", "int",    "int",      "int",     "string",    "string"]
-METAS   = ["CS", "CS",     "CS",   "CS",     "CS[1,]",   "CS[0,2]","CS",        "X"]
-COMMENTS= ["唯一ID", "物品名称", "类型ID", "品质等级(1-5)", "最大堆叠", "使用类型(0=无 1=消耗)", "描述", "策划备注(不导出)"]
+HEADERS = ["id", "name", "type", "quality", "max_stack", "use_type", "icon", "model_path", "description", "notes"]
+TYPES   = ["int", "string", "int", "int",    "int",      "int",     "resource_ref", "resource_ref", "string",    "string"]
+METAS   = ["CS", "CS",     "CS",   "CS",     "CS[1,]",   "CS[0,2]","C",            "C",           "CS",        "X"]
+COMMENTS= ["唯一ID", "物品名称", "类型ID", "品质等级(1-5)", "最大堆叠", "使用类型(0=无 1=消耗)", "图标资源", "模型资源", "描述", "策划备注(不导出)"]
 DATA    = [
-    [1001, "金币",    1, 1, 999999, 0, "游戏通用货币", "基础货币"],
-    [1002, "钻石",    1, 3, 999999, 0, "稀有货币", ""],
-    [2001, "生命药水", 2, 2, 99,     1, "恢复50点生命值", ""],
-    [2002, "魔法药水", 2, 2, 99,     1, "恢复30点魔法值", ""],
-    [3001, "铁剑",    3, 2, 1,      0, "一把普通的铁剑", "新手装备"],
+    [1001, "金币",    1, 1, 999999, 0, "ui/icon_coin",       "",                     "游戏通用货币", "基础货币"],
+    [1002, "钻石",    1, 3, 999999, 0, "ui/icon_diamond",    "",                     "稀有货币", ""],
+    [2001, "生命药水", 2, 2, 99,     1, "ui/icon_potion_red", "",                     "恢复50点生命值", ""],
+    [2002, "魔法药水", 2, 2, 99,     1, "ui/icon_potion_blue","",                     "恢复30点魔法值", ""],
+    [3001, "铁剑",    3, 2, 1,      0, "ui/icon_sword_001",  "wp/sword_001",          "一把普通的铁剑", "新手装备"],
 ]
 
 

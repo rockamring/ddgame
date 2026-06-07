@@ -26,7 +26,7 @@ namespace GameLogic.Network.Handlers
         /// </summary>
         public static void OnGC_Heartbeat(GC_Heartbeat msg)
         {
-Console.WriteLine("[Heartbeat] 收到心跳");
+            Console.WriteLine("[Heartbeat] 收到心跳");
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ Console.WriteLine("[Heartbeat] 收到心跳");
         /// </summary>
         public static void OnGC_ErrorNotify(GC_ErrorNotify msg)
         {
-Log.Error($"服务器错误: {msg.Message}");
+            Log.Error($"服务器错误: {msg.Message}");
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ Log.Error($"服务器错误: {msg.Message}");
         /// </summary>
         public static void OnGC_Login(GC_Login msg)
         {
-if (msg.Success)
+            if (msg.Success)
             {
                 Console.WriteLine("登录成功");
             }
@@ -53,7 +53,7 @@ if (msg.Success)
         /// </summary>
         public static void OnGC_PlayerDataSync(GC_PlayerDataSync msg)
         {
-// TODO: handle GC_PlayerDataSync
+            // TODO: handle GC_PlayerDataSync
         }
 
     }

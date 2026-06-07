@@ -40,6 +40,7 @@ CS_TYPE_MAP: Dict[str, str] = {
     "str":    "string",
     "bool":   "bool",
     "boolean":"bool",
+    "resource_ref": "EAssetId",
 }
 
 
@@ -137,8 +138,14 @@ def should_emit(meta: Dict[str, str], target: str) -> bool:
 def generate_row_class(table_name: str, fields: List[Dict]) -> str:
     """生成 C# 数据行类 (Config_xxx)"""
     class_name = f"Config_{to_pascal_case(table_name)}"
-    lines = [
-        "using System.Collections.Generic;",
+
+    # 检查是否有 resource_ref 字段，需要引入 EAssetId 命名空间
+    has_asset_ref = any(f.get("cs_type") == "EAssetId" for f in fields)
+    imports = ["using System.Collections.Generic;"]
+    if has_asset_ref:
+        imports.append("using GameFramework.Resource;")
+
+    lines = imports + [
         "",
         "namespace GameFramework.Data.Generated",
         "{",
@@ -168,7 +175,7 @@ def generate_row_class(table_name: str, fields: List[Dict]) -> str:
         if comment:
             lines.append(f"        /// <summary>\n        /// {comment}\n        /// </summary>")
         lines.append(f"        [FieldIndex({i})]")
-        if default:
+        if default and cs_type != "EAssetId":
             lines.append(f"        public {cs_type} {cs_name} {{ get; set; }} = {default};")
         else:
             lines.append(f"        public {cs_type} {cs_name} {{ get; set; }}")

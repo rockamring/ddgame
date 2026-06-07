@@ -165,9 +165,15 @@ def _extract_method_bodies(existing_path: str) -> Dict[str, str]:
             elif content[pos] == '}':
                 depth -= 1
             pos += 1
-        body = content[start:pos - 1].strip()
-        if body:
-            bodies[method_name] = body
+        raw_body = content[start:pos - 1]
+        # 提取相对缩进：去掉所有行的公共前导空白
+        lines = raw_body.splitlines()
+        non_empty = [l for l in lines if l.strip()]
+        if non_empty:
+            base_indent = min(len(l) - len(l.lstrip()) for l in non_empty)
+            normalized = "\n".join(l[base_indent:] if l.strip() else ""
+                                   for l in lines)
+            bodies[method_name] = normalized.strip()
     return bodies
 
 
@@ -222,7 +228,11 @@ def generate_handler_file(proto_filename: str, messages: List[Dict],
         lines.append("        {")
         body = existing_bodies.get(m['name'])
         if body:
-            lines.append(body)
+            for body_line in body.splitlines():
+                if body_line.strip():
+                    lines.append(f"            {body_line}")
+                else:
+                    lines.append("")
         else:
             lines.append(f"            // TODO: handle {m['name']}")
         lines.append("        }")

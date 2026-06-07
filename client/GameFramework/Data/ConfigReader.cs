@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using GameFramework.Resource;
 
 namespace GameFramework.Data
 {
@@ -92,6 +93,7 @@ namespace GameFramework.Data
             if (type == typeof(float))  return reader.ReadSingle();
             if (type == typeof(double)) return reader.ReadDouble();
             if (type == typeof(bool))   return reader.ReadByte() != 0;
+            if (type == typeof(EAssetId)) return (EAssetId)reader.ReadUInt32();
 
             if (type == typeof(string))
             {

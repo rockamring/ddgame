@@ -45,6 +45,7 @@ TYPE_MAP: Dict[str, Tuple[str, int]] = {
     "double": ("<d", 3),    # 8B IEEE 754 LE
     "string": ("str", 4),   # [4B len][N utf8]
     "bool":   ("<?", 5),    # 1B (0/1)
+    "EAssetId": ("<I", 12), # 4B unsigned LE (资源引用 ID)
     "list<int>":    ("list_i", 6),
     "list<long>":   ("list_q", 7),
     "list<float>":  ("list_f", 8),
@@ -54,6 +55,23 @@ TYPE_MAP: Dict[str, Tuple[str, int]] = {
 }
 
 MAGIC = b"CFGB"
+
+# EAssetId 临时分配（Phase 1 用计数器分配 ID）
+# Phase 2 的 resource_codegen.py 会生成完整映射并重写此逻辑
+_resource_ref_counter = 0
+_resource_ref_map: Dict[str, int] = {}
+
+
+def _resolve_asset_id(path: str) -> int:
+    """将资源路径字符串转为稳定的 uint ID"""
+    global _resource_ref_counter
+    key = path.strip().lower()
+    if not key:
+        return 0
+    if key not in _resource_ref_map:
+        _resource_ref_counter += 1
+        _resource_ref_map[key] = _resource_ref_counter
+    return _resource_ref_map[key]
 
 
 # ============================================================
@@ -74,6 +92,8 @@ def write_value(f, cs_type: str, val: Any) -> None:
 
     if cs_type == "int":
         f.write(struct.pack("<i", int(val)))
+    elif cs_type == "EAssetId":
+        f.write(struct.pack("<I", _resolve_asset_id(str(val)) if val else 0))
     elif cs_type == "long":
         f.write(struct.pack("<q", int(val)))
     elif cs_type == "float":
@@ -162,7 +182,8 @@ def parse_cs_type(raw: str) -> str:
     """解析类型字符串为 C# 类型名（与 config_codegen 一致）"""
     raw = raw.strip().lower()
     builtin = {"int": "int", "long": "long", "float": "float", "double": "double",
-               "string": "string", "str": "string", "bool": "bool", "boolean": "bool"}
+               "string": "string", "str": "string", "bool": "bool", "boolean": "bool",
+               "resource_ref": "EAssetId"}
     if raw in builtin:
         return builtin[raw]
 
