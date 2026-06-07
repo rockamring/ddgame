@@ -1,5 +1,6 @@
 # .NET
 bin/
+!public/tools/codegen/protoc-*/bin/protoc.exe
 obj/
 *.user
 *.suo
