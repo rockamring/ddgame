@@ -30,6 +30,8 @@ GameHandler.RegisterAll(networkManager);
 
 ## 生成命令
 
+双击 `gen_proto.bat` 一键生成，或手动执行：
+
 ```bash
 python public/tools/codegen/proto_codegen.py \
   --proto-dir . \

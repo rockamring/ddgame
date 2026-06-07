@@ -1,11 +1,12 @@
 @echo off
+cd /d "%~dp0"
 echo ========================================
 echo  Export Config Data (Excel -> .cfgb)
 echo ========================================
 
-for %%f in (public\configs\*.xlsx) do (
+for /r %%f in (*.xlsx) do (
     echo [%%~nxf]
-    python public\tools\codegen\config_exporter.py --input "%%f" --output-dir config --target client
+    python ..\tools\codegen\config_exporter.py --input "%%f" --output-dir ..\..\config --target client
     echo.
 )
 
