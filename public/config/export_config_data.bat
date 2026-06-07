@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 echo ========================================
-echo  Export Config Data (Excel -> .cfgb)
+echo  Export Config Data (Excel -^> .cfgb)
 echo ========================================
 
 for /r %%f in (*.xlsx) do (

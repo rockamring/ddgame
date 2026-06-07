@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 echo ========================================
-echo  Generate Config Code (Excel -> C#)
+echo  Generate Config Code (Excel -^> C#)
 echo ========================================
 
 for /r %%f in (*.xlsx) do (
