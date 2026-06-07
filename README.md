@@ -129,14 +129,14 @@ C# 侧通过 `[FieldIndex(N)]` 属性标注字段顺序，反射按序列读取�
 ```bash
 pip install openpyxl
 python public/tools/codegen/config_codegen.py \
-  --input public/configs/ItemConfig.xlsx \
+  --input public/config/ItemConfig.xlsx \
   --output-dir client/GameFramework/Data/Generated
 ```
 
 ### 1b. 导出二进制数据（Excel → .cfgb）
 ```bash
 python public/tools/codegen/config_exporter.py \
-  --input public/configs/ItemConfig.xlsx \
+  --input public/config/ItemConfig.xlsx \
   --output-dir config/ \
   --target client
 ```
@@ -150,7 +150,7 @@ python public/tools/codegen/proto_codegen.py \
 
 ### 3. 数据校验
 ```bash
-python public/tools/data/validators.py --config-dir public/configs/
+python public/tools/data/validators.py --config-dir public/config/
 ```
 
 ### 4. 构建运行（需 .NET 8 SDK）
