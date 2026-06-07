@@ -5,10 +5,27 @@
 | 行 | 内容 | 示例 |
 |---|------|------|
 | 第1行 | 字段名 | `id` `name` `type` |
-| 第2行 | 类型 | `int` `string` `list<int>` |
+| 第2行 | 类型 | `int` `string` `list<int>`（见下方支持的类型） |
 | 第3行 | 元数据标记 | `CS` `C` `S` `X`（见下方说明） |
 | 第4行 | 注释说明 | `物品ID` `物品名称` |
 | 第5行+ | 数据 | `1001 金币 1` |
+
+## 支持的数据类型（第2行）
+
+| 类型 | C# 类型 | 说明 |
+|------|---------|------|
+| `int` | `int` | 32位整数 |
+| `long` | `long` | 64位整数 |
+| `float` | `float` | 单精度浮点 |
+| `double` | `double` | 双精度浮点 |
+| `bool` | `bool` | `true` / `false` |
+| `string` | `string` | 字符串 |
+| `list<int>` | `List<int>` | 整数列表（逗号分隔） |
+| `list<long>` | `List<long>` | 64位整数列表 |
+| `list<float>` | `List<float>` | 浮点列表 |
+| `list<double>` | `List<double>` | 双精度浮点列表 |
+| `list<string>` | `List<string>` | 字符串列表 |
+| `list<bool>` | `List<bool>` | 布尔列表 |
 
 ## 元数据标记（第3行）
 
