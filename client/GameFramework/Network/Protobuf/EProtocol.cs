@@ -5,19 +5,18 @@
 namespace GameFramework.Network.Protobuf
 {
     /// <summary>
-    /// 协议消息ID枚举
+    /// 协议消息 ID 枚举（前后端共用）
     /// </summary>
     public enum EProtocol : ushort
     {
+        None = 0,
 
         // ---- game.proto ----
-        HeartbeatReq = 1000,
-        HeartbeatRes = 1001,
-        ErrorNotify = 1002,
-        LoginReq = 1003,
-        LoginRes = 1004,
-        PlayerInfo = 1005,
-        ItemInfo = 1006,
-        PlayerDataSync = 1007,
+        CG_Heartbeat = 1000,
+        GC_Heartbeat = 1001,
+        GC_ErrorNotify = 1002,
+        CG_Login = 1003,
+        GC_Login = 1004,
+        GC_PlayerDataSync = 1005,
     }
 }

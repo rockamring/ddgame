@@ -8,6 +8,7 @@ using GameFramework.Data;
 using GameFramework.Network;
 using GameFramework.Network.Connection;
 using GameFramework.UI;
+using GameLogic.Network.Handlers;
 
 namespace GameRuntime
 {
@@ -114,6 +115,10 @@ namespace GameRuntime
             // 数据管理器
             app.RegisterModule(new DataManager());
 
+            // 网络管理器
+            var networkManager = new NetworkManager();
+            app.RegisterModule(networkManager);
+
             // 自定义游戏模块
             var playerModule = new PlayerModule();
             app.RegisterModule(playerModule);
@@ -207,7 +212,23 @@ namespace GameRuntime
                 Console.WriteLine($"  [SKIP] {ex.Message}");
             }
 
-            // ========== 9. 关闭 ==========
+            // ========== 9. 演示 Network — 协议消息系统 ==========
+            Console.WriteLine("\n[Demo] Network — 协议消息系统");
+
+            // CG_ 消息：直接构造发送，无需注册处理器
+            Console.WriteLine("  CG_ 消息（客户端→服务器，直接发送）:");
+            var heartbeatReq = new CG_Heartbeat { ClientTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() };
+            Console.WriteLine($"    new CG_Heartbeat {{ ClientTime = {heartbeatReq.ClientTime} }}");
+            Console.WriteLine($"    networkManager.Send((ushort)EProtocol.CG_Heartbeat, heartbeatReq);");
+
+            // GC_ 消息：自动注册处理器
+            Console.WriteLine("  GC_ 消息（服务器→客户端，自动注册处理器）:");
+            GameHandler.RegisterAll(networkManager);
+            Console.WriteLine($"    已注册 {networkManager.Dispatcher.Count} 个 GC_ 处理器");
+
+            Console.WriteLine("  收到 GC_Login 时自动触发 GameHandler.OnGC_Login():");
+
+            // ========== 10. 关闭 ==========
             Console.WriteLine("\n[Step Final] 关闭 GameApp...");
             app.Shutdown();
 

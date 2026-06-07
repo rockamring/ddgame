@@ -1,0 +1,11 @@
+# Game.proto 消息 ID 定义
+# 前后端共用此文件保证 ID 严格匹配
+# 格式: 消息名 = ID编号
+# 注意: 内嵌数据消息（玩家数据、物品信息等）不需要在此定义
+
+CG_Heartbeat = 1000
+GC_Heartbeat = 1001
+GC_ErrorNotify = 1002
+CG_Login = 1003
+GC_Login = 1004
+GC_PlayerDataSync = 1005

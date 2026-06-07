@@ -5,38 +5,35 @@ package GameProtocol;
 option csharp_namespace = "GameFramework.Network.Protobuf";
 
 // ============================================================
-// 通用消息
+// 消息命名约定：
+//   CG_xxx  客户端→服务器（客户端不注册处理器）
+//   GC_xxx  服务器→客户端（自动生成处理器注册 + 回调桩）
+//   无前缀  内嵌数据消息，不单独走网络
+//
+// 消息 ID 定义在相同目录的 .id 文件中（如 game.id）
 // ============================================================
 
-// 心跳请求
-message HeartbeatReq {
+// @ 心跳
+message CG_Heartbeat {
     int64 client_time = 1;
 }
 
-// 心跳响应
-message HeartbeatRes {
+message GC_Heartbeat {
     int64 server_time = 1;
 }
 
-// 错误码通知
-message ErrorNotify {
+message GC_ErrorNotify {
     int32 code = 1;
     string message = 2;
 }
 
-// ============================================================
-// 登录相关
-// ============================================================
-
-// 登录请求
-message LoginReq {
+message CG_Login {
     string account = 1;
     string token = 2;
     int32 platform = 3;
 }
 
-// 登录响应
-message LoginRes {
+message GC_Login {
     int32 player_id = 1;
     string nickname = 2;
     int32 level = 3;
@@ -44,10 +41,9 @@ message LoginRes {
 }
 
 // ============================================================
-// 玩家数据
+// 内嵌数据消息（不单独走网络，无需在 .id 中定义）
 // ============================================================
 
-// 玩家基础信息
 message PlayerInfo {
     int32 player_id = 1;
     string nickname = 2;
@@ -58,14 +54,12 @@ message PlayerInfo {
     int32 vip_level = 7;
 }
 
-// 物品信息
 message ItemInfo {
     int32 item_id = 1;
     int32 count = 2;
 }
 
-// 玩家数据同步
-message PlayerDataSync {
+message GC_PlayerDataSync {
     PlayerInfo player = 1;
     repeated ItemInfo items = 2;
 }

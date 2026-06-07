@@ -165,4 +165,56 @@ dotnet run --project client/GameRuntime/
  [4字节:总包长] [2字节:消息ID] [Protobuf消息体]
 ```
 
-消息ID从 1000 开始分配，使用 `EProtocol` 枚举管理。
+### 消息 ID 定义
+
+消息 ID 统一定义在 `proto.id` 文件中（目录下所有 proto 共用一份），前后端共用保证 ID 严格匹配：
+
+```
+# public/proto/proto.id
+CG_Heartbeat = 1000
+GC_Heartbeat = 1001
+GC_ErrorNotify = 1002
+CG_Login = 1003
+GC_Login = 1004
+GC_PlayerDataSync = 1005
+```
+
+### 消息命名约定
+
+| 前缀 | 方向 | 客户端行为 |
+|------|------|-----------|
+| `CG_` | 客户端→服务器 | 直接发送，无需注册处理器 |
+| `GC_` | 服务器→客户端 | 自动生成处理器桩 + 自动注册 |
+
+示例：
+- 客户端发送 `CG_Login` → 服务端处理登录
+- 服务端返回 `GC_Login` → 自动触发 `GameHandler.OnGC_Login()`
+
+### 代码生成
+
+```bash
+python public/tools/codegen/proto_codegen.py \
+  --proto-dir public/proto/ \
+  --output-dir client/GameFramework/Network/Protobuf/ \
+  --handler-dir client/GameLogic/Network/Handlers/
+```
+
+生成产物：
+- `Generated/Game.cs` — 消息类（protoc 生成，Google.Protobuf.IMessage 实现）
+- `EProtocol.cs` — 消息 ID 枚举
+- `Handlers/GameHandler.cs` — `GC_` 消息处理器，含 `RegisterAll()` + `OnXxx()` 桩
+
+### 使用
+
+发送 `CG_` 消息：
+```csharp
+var msg = new CG_Heartbeat { ClientTime = 12345 };
+networkManager.Send((ushort)EProtocol.CG_Heartbeat, msg);
+```
+
+注册处理器（一次初始化，自动绑定所有 `GC_` 回调）：
+```csharp
+GameHandler.RegisterAll(networkManager);
+```
+
+处理 `GC_` 消息（编辑 `GameHandler.cs` 中对应 `OnXxx()` 方法即可）。
