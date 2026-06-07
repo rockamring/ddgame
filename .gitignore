@@ -1,0 +1,24 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Runtime
+*.log
+
+# Generated config data (exported from Excel)
+config/

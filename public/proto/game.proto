@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package GameProtocol;
+
+option csharp_namespace = "GameFramework.Network.Protobuf";
+
+// ============================================================
+// 通用消息
+// ============================================================
+
+// 心跳请求
+message HeartbeatReq {
+    int64 client_time = 1;
+}
+
+// 心跳响应
+message HeartbeatRes {
+    int64 server_time = 1;
+}
+
+// 错误码通知
+message ErrorNotify {
+    int32 code = 1;
+    string message = 2;
+}
+
+// ============================================================
+// 登录相关
+// ============================================================
+
+// 登录请求
+message LoginReq {
+    string account = 1;
+    string token = 2;
+    int32 platform = 3;
+}
+
+// 登录响应
+message LoginRes {
+    int32 player_id = 1;
+    string nickname = 2;
+    int32 level = 3;
+    int64 login_time = 4;
+}
+
+// ============================================================
+// 玩家数据
+// ============================================================
+
+// 玩家基础信息
+message PlayerInfo {
+    int32 player_id = 1;
+    string nickname = 2;
+    int32 level = 3;
+    int32 exp = 4;
+    int64 gold = 5;
+    int64 diamond = 6;
+    int32 vip_level = 7;
+}
+
+// 物品信息
+message ItemInfo {
+    int32 item_id = 1;
+    int32 count = 2;
+}
+
+// 玩家数据同步
+message PlayerDataSync {
+    PlayerInfo player = 1;
+    repeated ItemInfo items = 2;
+}

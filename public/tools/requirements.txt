@@ -1,0 +1,18 @@
+# 游戏工具链依赖
+# 安装: pip install -r requirements.txt
+
+# 配置表处理
+openpyxl>=3.1.0        # Excel (.xlsx) 读写支持
+pyyaml>=6.0            # YAML 配置支持（可选）
+
+# Proto处理
+protobuf>=4.25.0       # Protocol Buffer 支持
+
+# 数据校验
+jsonschema>=4.20.0     # JSON Schema 校验
+
+# 代码格式化
+black>=24.0.0          # Python 代码格式化
+
+# 其他工具
+click>=8.1.0           # CLI 参数解析增强
