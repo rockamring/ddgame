@@ -8,6 +8,7 @@ using GameFramework.Data;
 using GameFramework.Network;
 using GameFramework.Network.Connection;
 using GameFramework.Network.Protobuf;
+using GameFramework.Resource;
 using GameFramework.UI;
 using GameLogic.Network.Handlers;
 
@@ -120,6 +121,10 @@ namespace GameRuntime
             var networkManager = new NetworkManager();
             app.RegisterModule(networkManager);
 
+            // 资源管理器
+            var resourceManager = new ResourceManager();
+            app.RegisterModule(resourceManager);
+
             // 自定义游戏模块
             var playerModule = new PlayerModule();
             app.RegisterModule(playerModule);
@@ -229,7 +234,41 @@ namespace GameRuntime
 
             Console.WriteLine("  收到 GC_Login 时自动触发 GameHandler.OnGC_Login():");
 
-            // ========== 10. 关闭 ==========
+            // ========== 10. 演示 ResourceSystem ==========
+            Console.WriteLine("\n[Demo] ResourceSystem - sync/async loading and ref counting");
+            var builtinProvider = new MemoryResourceProvider(name: "Builtin", priority: 10);
+            builtinProvider.Add("texts/welcome", "Welcome to the resource system.");
+            var remoteProvider = new MemoryResourceProvider(name: "Remote", priority: 20, canLoadSync: false);
+            remoteProvider.Add("remote/tip", "Async resource loaded from the higher-priority provider.");
+            resourceManager.AddProvider(builtinProvider);
+            resourceManager.AddProvider(remoteProvider);
+
+            using (var handleA = resourceManager.LoadHandle<string>("texts/welcome"))
+            using (var handleB = resourceManager.LoadHandle<string>("texts/welcome"))
+            {
+                Console.WriteLine($"  Sync load: {handleA.Asset}");
+                Console.WriteLine($"  Shared cached asset: {ReferenceEquals(handleA.Asset, handleB.Asset)}");
+                Console.WriteLine($"  RefCount after two handles: {handleA.RefCount}");
+            }
+            Console.WriteLine($"  Loaded after disposing handles: {resourceManager.IsLoaded("texts/welcome")}");
+
+            var asyncHandle = resourceManager.LoadHandleAsync<string>("remote/tip").GetAwaiter().GetResult();
+            Console.WriteLine($"  Async load: {asyncHandle.Asset}");
+            asyncHandle.Dispose();
+
+            try
+            {
+                resourceManager.Load<string>("remote/tip");
+            }
+            catch (NotSupportedException ex)
+            {
+                Console.WriteLine($"  Sync unsupported check: {ex.Message}");
+            }
+
+            resourceManager.Clear();
+            Console.WriteLine($"  Loaded after Clear: {resourceManager.IsLoaded("remote/tip")}");
+
+            // ========== 11. 关闭 ==========
             Console.WriteLine("\n[Step Final] 关闭 GameApp...");
             app.Shutdown();
 

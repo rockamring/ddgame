@@ -6,6 +6,7 @@
 
 - 这是一个 Unity 游戏框架项目的早期骨架，不是一次性完成的完整游戏。
 - 当前重点是客户端框架层、游戏逻辑层、公共配置/协议工具链，以及后续 Unity 工程接入的基础。
+- 一切设计以易维护、易扩展为第一目标；不要为了“框架化”而牺牲实现清晰度和后续演进空间。
 - 代码应优先服务“可扩展、可生成、可验证”，避免为了短期演示写死业务流程。
 - 后续新增功能时，应保持模块边界清晰：框架层提供通用能力，逻辑层组合业务规则，工具链负责生成重复性代码和运行时数据。
 
@@ -78,6 +79,8 @@ dotnet run --project .\client\GameRuntime\
 - 优先沿用现有命名空间和目录结构，不为单个需求引入新的顶层架构。
 - 框架通用能力放在 `client/GameFramework`，业务组合和具体处理放在 `client/GameLogic`。
 - 保持 `GameFramework` 对 Unity 友好：避免直接依赖 UnityEngine，除非进入 Unity 专用适配层。
+- 不要把所有能力都强行抽象进 `GameFramework`；如果某个能力放在 Unity 工程内更自然、更易维护，就应放在 Unity 侧。
+- `GameFramework` 应提供稳定边界、通用接口和生命周期，不应承载大量 Unity 具体实现细节。
 - 核心模块应通过明确生命周期工作，例如 Initialize、Update、Shutdown。
 - 对外 API 尽量类型安全，避免用字符串作为核心调度键；已有协议 ID、配置类型、事件类型应优先复用。
 - 新增公共模块时要考虑是否需要：
@@ -136,6 +139,8 @@ Row 5+: 数据
 - Unity 相关启动、MonoBehaviour 桥接、资源加载适配、场景生命周期适配应放入 Unity 工程侧。
 - 不要让通用框架层直接耦合 Unity 场景、Prefab、Addressables 或编辑器 API。
 - 可以新增 Unity 适配层，将 Unity 的 Update/LateUpdate/Application Quit 转发到 `GameApp` 或对应模块。
+- 对 Resources、Addressables、AssetBundle、HybridCLR、Input System、AudioMixer 等 Unity 生态能力，优先在 Unity 工程侧实现适配器；只有稳定且跨后端通用的抽象才下沉到 `GameFramework`。
+- 热更新相关设计应让 `GameFramework` 作为稳定宿主层，热更业务代码放在 `GameLogic`、`GameHotfix` 或 Unity 工程侧的热更程序集内。
 
 ## 工具链约定
 
