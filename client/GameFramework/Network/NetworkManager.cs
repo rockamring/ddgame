@@ -2,6 +2,7 @@ using System;
 using GameFramework.Core.GameSystem;
 using GameFramework.Network.Connection;
 using GameFramework.Network.Messages;
+using Google.Protobuf;
 
 namespace GameFramework.Network
 {

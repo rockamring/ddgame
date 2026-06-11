@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameFramework.Network.Connection;
+using Google.Protobuf;
 
 namespace GameFramework.Network.Messages
 {

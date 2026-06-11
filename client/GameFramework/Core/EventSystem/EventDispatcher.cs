@@ -25,6 +25,7 @@ namespace GameFramework.Core.EventSystem
             var entry = new HandlerEntry
             {
                 Callback = e => callback((T)e),
+                OriginalCallback = callback,
                 Priority = priority,
                 IsOneShot = false,
                 EventType = typeof(T)
@@ -50,6 +51,7 @@ namespace GameFramework.Core.EventSystem
             var entry = new HandlerEntry
             {
                 Callback = e => callback((T)e),
+                OriginalCallback = callback,
                 Priority = priority,
                 IsOneShot = true,
                 EventType = typeof(T)
@@ -76,17 +78,13 @@ namespace GameFramework.Core.EventSystem
             if (!_handlers.TryGetValue(type, out var list))
                 return;
 
-            list.RemoveAll(e =>
+            foreach (var entry in list)
             {
-                // Use Delegate.Equals to compare the callback chains
-                if (e.Callback is Action<IEvent> action)
-                {
-                    return action == (Action<IEvent>)(e => callback((T)e)) ||
-                           action.Target == callback.Target &&
-                           action.Method == callback.Method;
-                }
-                return false;
-            });
+                if (Delegate.Equals(entry.OriginalCallback, callback))
+                    entry.IsMarkedRemoved = true;
+            }
+
+            list.RemoveAll(e => e.IsMarkedRemoved);
         }
 
         /// <summary>
@@ -182,6 +180,7 @@ namespace GameFramework.Core.EventSystem
         private class HandlerEntry
         {
             public Action<IEvent>? Callback { get; set; }
+            public Delegate? OriginalCallback { get; set; }
             public int Priority { get; set; }
             public bool IsOneShot { get; set; }
             public bool IsMarkedRemoved { get; set; }

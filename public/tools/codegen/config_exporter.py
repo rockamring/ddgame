@@ -128,8 +128,11 @@ def export_table(fields: List[Dict], data_rows: List[List[Any]], output_path: st
 
         # 数据区：逐行、逐字段写入
         for row in data_rows:
-            for ci, field in enumerate(fields):
-                val = row[ci] if ci < len(row) else None
+            for field in fields:
+                source_index = field.get("source_index")
+                if source_index is None:
+                    source_index = field.get("index", 0)
+                val = row[source_index] if source_index < len(row) else None
                 write_value(f, field["cs_type"], val)
 
     print(f"[OK] 导出: {output_path}")
@@ -262,6 +265,7 @@ def process_excel(file_path: str, output_dir: str, target: str = "client") -> No
         fields.append({
             "name": h,
             "cs_type": parse_cs_type(type_strs[ci] if ci < len(type_strs) else ""),
+            "source_index": ci,
         })
 
     if not fields:
@@ -302,7 +306,7 @@ def process_json(file_path: str, output_dir: str) -> None:
             cs = "bool"
         else:
             cs = "int"
-        fields.append({"name": key, "cs_type": cs})
+        fields.append({"name": key, "cs_type": cs, "source_index": len(fields)})
 
     # 将 JSON 行转为有序数据行
     data_rows = []
