@@ -1,22 +1,39 @@
 # UnityClient
 
-Unity 客户端工程预留目录。
+Unity 2022.3 client project.
 
-当前框架代码位于 `client/GameFramework` 和 `client/GameLogic`，目标框架为 `.NET Standard 2.1`，可作为 Unity 侧代码层接入。外围工具链位于 `public/tools`：
+## GameFramework integration
 
-- 配置表：`public/config/client/*.xlsx` -> `client/GameFramework/Data/Generated/*.cs` + `config/*.cfgb`
-- 协议：`public/proto/*.proto` + `public/proto/proto.id` -> Protobuf C# 代码 + 客户端处理器桩
+`GameFramework` is consumed as a precompiled DLL under:
 
-项目根目录双击/执行：
-
-```bat
-init.bat
+```text
+Assets/Scripts/Framework/Plugins/GameFramework.dll
+Assets/Scripts/Framework/Plugins/Google.Protobuf.dll
 ```
 
-或手动执行：
+Unity-specific code stays in this Unity project:
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\init.ps1
+```text
+Assets/Scripts/App/GameBootstrap.cs
+Assets/Scripts/Framework/Adapters/ResourcesProvider.cs
 ```
 
-脚本会完成目录检查、配置校验、配置代码生成、配置数据导出、协议代码生成，并在检测到 .NET 8 SDK 时构建独立运行示例。
+`GameBootstrap` is created automatically before the first scene loads. It registers the default framework modules, initializes `GameApp`, forwards Unity `Update` to `GameApp.Tick`, and shuts the framework down when the application quits.
+
+`ResourcesProvider` adapts Unity `Resources` loading to `ResourceManager`. Paths may use `res://path/to/asset`; plain Resources paths are also accepted.
+
+## Sync DLLs
+
+After changing `client/GameFramework`, rebuild and sync the DLLs from Unity:
+
+```text
+Tools/GameFramework/Build And Sync DLLs
+```
+
+Or sync already-built DLLs:
+
+```text
+Tools/GameFramework/Sync DLLs
+```
+
+The framework should remain Unity-agnostic. Add Unity APIs, Addressables, AssetBundle, HybridCLR, Input System, AudioMixer, and scene-specific behavior in this Unity project as adapters.

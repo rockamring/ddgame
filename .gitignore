@@ -22,7 +22,7 @@ venv/
 *.log
 
 # Generated config data (exported from Excel)
-config/
+/config/
 
 # Unity
 client/UnityClient/Library/
@@ -36,3 +36,4 @@ client/UnityClient/MemoryCaptures/
 client/UnityClient/*.csproj
 client/UnityClient/*.sln
 client/UnityClient/*.userprefs
+client/UnityClient/.vsconfig
