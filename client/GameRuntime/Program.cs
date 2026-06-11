@@ -7,6 +7,7 @@ using GameFramework.Core.GameSystem;
 using GameFramework.Data;
 using GameFramework.Network;
 using GameFramework.Network.Connection;
+using GameFramework.Network.Protobuf;
 using GameFramework.UI;
 using GameLogic.Network.Handlers;
 

@@ -170,6 +170,8 @@ def generate_row_class(table_name: str, fields: List[Dict]) -> str:
         lines.append(f"        [FieldIndex({i})]")
         if default:
             lines.append(f"        public {cs_type} {cs_name} {{ get; set; }} = {default};")
+        elif cs_type == "string":
+            lines.append(f"        public {cs_type} {cs_name} {{ get; set; }} = string.Empty;")
         else:
             lines.append(f"        public {cs_type} {cs_name} {{ get; set; }}")
 

@@ -16,7 +16,7 @@ namespace GameFramework.Data.Generated
         /// 物品名称
         /// </summary>
         [FieldIndex(1)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         /// <summary>
         /// 类型ID
         /// </summary>
@@ -41,7 +41,7 @@ namespace GameFramework.Data.Generated
         /// 描述
         /// </summary>
         [FieldIndex(6)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         public int Id => _id;
     }

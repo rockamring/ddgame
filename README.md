@@ -20,7 +20,7 @@ game/
 │
 └── public/                    ← 公共资源
     ├── tools/                 ← Python 工具链
-    ├── configs/               ← 策划配置数据
+    ├── config/                ← 策划配置数据
     └── proto/                 ← Protobuf 协议定义
 ```
 
@@ -125,18 +125,28 @@ C# 侧通过 `[FieldIndex(N)]` 属性标注字段顺序，反射按序列读取�
 
 ## 快速开始
 
+### 0. 初始化工具链
+```bat
+init.bat
+```
+
+或：
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\init.ps1
+```
+
 ### 1. 生成 C# 配置代码（Excel → C#）
 ```bash
 pip install openpyxl
 python public/tools/codegen/config_codegen.py \
-  --input public/config/ItemConfig.xlsx \
+  --input public/config/client/ItemConfig.xlsx \
   --output-dir client/GameFramework/Data/Generated
 ```
 
 ### 1b. 导出二进制数据（Excel → .cfgb）
 ```bash
 python public/tools/codegen/config_exporter.py \
-  --input public/config/ItemConfig.xlsx \
+  --input public/config/client/ItemConfig.xlsx \
   --output-dir config/ \
   --target client
 ```
@@ -150,7 +160,7 @@ python public/tools/codegen/proto_codegen.py \
 
 ### 3. 数据校验
 ```bash
-python public/tools/data/validators.py --config-dir public/config/
+python public/tools/data/validators.py --config-dir public/config/client/
 ```
 
 ### 4. 构建运行（需 .NET 8 SDK）

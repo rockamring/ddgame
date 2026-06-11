@@ -11,7 +11,7 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "configs")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "config", "client")
 
 HEADERS = ["id", "name", "type", "quality", "max_stack", "use_type", "description", "notes"]
 TYPES   = ["int", "string", "int", "int",    "int",      "int",     "string",    "string"]

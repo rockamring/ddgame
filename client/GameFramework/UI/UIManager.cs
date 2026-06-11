@@ -15,7 +15,7 @@ namespace GameFramework.UI
         private readonly Dictionary<UILayer, UIStack> _layerStacks = new();
         private readonly Dictionary<string, Type> _windowTypes = new();
 
-        private static readonly UILayer[] s_layers = Enum.GetValues<UILayer>();
+        private static readonly UILayer[] s_layers = Enum.GetValues(typeof(UILayer)).Cast<UILayer>().ToArray();
 
         public override string ModuleName => "UIManager";
 
