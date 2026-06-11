@@ -160,10 +160,10 @@ def generate_handler_file(proto_filename: str, messages: List[Dict]) -> Optional
         "namespace GameLogic.Network.Handlers",
         "{",
         f"    /// <summary>",
-        f"    /// {proto_filename} 处理器（自动注册 + 回调桩）",
-        f"    /// 在对应方法中编写业务逻辑",
+        f"    /// {proto_filename} 处理器自动注册与转发。",
+        f"    /// 业务逻辑请写在同名非生成 partial 类中。",
         f"    /// </summary>",
-        f"    public static class {class_name}",
+        f"    public static partial class {class_name}",
         "    {",
         "        public static void RegisterAll(NetworkManager network)",
         "        {",
@@ -172,20 +172,19 @@ def generate_handler_file(proto_filename: str, messages: List[Dict]) -> Optional
     for m in gc_msgs:
         lines.append(
             f"            network.RegisterHandler<{m['name']}>("
-            f"(ushort)EProtocol.{m['name']}, On{m['name']});"
+            f"(ushort)EProtocol.{m['name']}, Handle{m['name']});"
         )
 
     lines.append("        }")
     lines.append("")
 
     for m in gc_msgs:
-        lines.append("        /// <summary>")
-        lines.append(f"        /// 处理 {m['name']}")
-        lines.append("        /// </summary>")
-        lines.append(f"        public static void On{m['name']}({m['name']} msg)")
+        lines.append(f"        private static void Handle{m['name']}({m['name']} msg)")
         lines.append("        {")
-        lines.append(f"            // TODO: handle {m['name']}")
+        lines.append(f"            On{m['name']}(msg);")
         lines.append("        }")
+        lines.append("")
+        lines.append(f"        static partial void On{m['name']}({m['name']} msg);")
         lines.append("")
 
     lines.append("    }")
@@ -340,7 +339,7 @@ def main():
         code = generate_handler_file(filename, messages)
         if code:
             class_name = to_handler_class(filename)
-            handler_path = os.path.join(handler_dir, f"{class_name}.cs")
+            handler_path = os.path.join(handler_dir, f"{class_name}.Generated.cs")
             with open(handler_path, "w", encoding="utf-8") as f:
                 f.write(code)
             print(f"[OK] {handler_path}")

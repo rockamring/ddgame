@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace GameFramework.Network.Connection
 {
@@ -9,6 +10,8 @@ namespace GameFramework.Network.Connection
     /// </summary>
     public static class PacketCodec
     {
+        public const int MaxPacketSize = 1024 * 1024;
+
         /// <summary>
         /// 编码数据包为字节流
         /// </summary>
@@ -16,6 +19,9 @@ namespace GameFramework.Network.Connection
         {
             var bodyLength = packet.Body.Length;
             var totalLength = Packet.HeaderSize + bodyLength;
+            if (totalLength > MaxPacketSize)
+                throw new InvalidDataException(
+                    $"Packet is too large: {totalLength} bytes, max {MaxPacketSize} bytes.");
 
             var buffer = new byte[totalLength];
 
@@ -61,6 +67,13 @@ namespace GameFramework.Network.Connection
                               (buffer[offset + 1] << 16) |
                               (buffer[offset + 2] << 8) |
                               buffer[offset + 3];
+
+            if (totalLength < Packet.HeaderSize)
+                throw new InvalidDataException($"Invalid packet length: {totalLength}.");
+
+            if (totalLength > MaxPacketSize)
+                throw new InvalidDataException(
+                    $"Packet is too large: {totalLength} bytes, max {MaxPacketSize} bytes.");
 
             // 数据不足，等待更多
             if (length < totalLength)

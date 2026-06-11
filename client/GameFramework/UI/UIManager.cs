@@ -11,7 +11,7 @@ namespace GameFramework.UI
     /// </summary>
     public class UIManager : GameModule
     {
-        private readonly Dictionary<string, UIWindow> _windows = new();
+        private readonly Dictionary<Type, UIWindow> _windows = new();
         private readonly Dictionary<UILayer, UIStack> _layerStacks = new();
         private readonly Dictionary<string, Type> _windowTypes = new();
 
@@ -43,10 +43,10 @@ namespace GameFramework.UI
         /// </summary>
         public T Open<T>(Action<T>? onPrepared = null) where T : UIWindow, new()
         {
-            var name = typeof(T).Name;
+            var windowType = typeof(T);
 
             // 从缓存获取或创建新窗口
-            if (!_windows.TryGetValue(name, out var window))
+            if (!_windows.TryGetValue(windowType, out var window))
             {
                 window = CreateWindow<T>();
             }
@@ -66,8 +66,8 @@ namespace GameFramework.UI
         /// </summary>
         public void Close<T>() where T : UIWindow
         {
-            var name = typeof(T).Name;
-            if (!_windows.TryGetValue(name, out var window))
+            var windowType = typeof(T);
+            if (!_windows.TryGetValue(windowType, out var window))
                 return;
 
             var stack = _layerStacks[window.Layer];
@@ -112,8 +112,8 @@ namespace GameFramework.UI
         /// </summary>
         public T? Get<T>() where T : UIWindow
         {
-            var name = typeof(T).Name;
-            if (_windows.TryGetValue(name, out var window))
+            var windowType = typeof(T);
+            if (_windows.TryGetValue(windowType, out var window))
             {
                 return window as T;
             }
@@ -134,12 +134,12 @@ namespace GameFramework.UI
         /// </summary>
         public void Destroy<T>() where T : UIWindow
         {
-            var name = typeof(T).Name;
-            if (!_windows.TryGetValue(name, out var window))
+            var windowType = typeof(T);
+            if (!_windows.TryGetValue(windowType, out var window))
                 return;
 
             window.Destroy();
-            _windows.Remove(name);
+            _windows.Remove(windowType);
         }
 
         /// <summary>
@@ -147,13 +147,13 @@ namespace GameFramework.UI
         /// </summary>
         public T Preload<T>() where T : UIWindow, new()
         {
-            var name = typeof(T).Name;
-            if (_windows.ContainsKey(name))
-                return (T)_windows[name];
+            var windowType = typeof(T);
+            if (_windows.ContainsKey(windowType))
+                return (T)_windows[windowType];
 
             var window = new T();
             window.Initialize();
-            _windows[name] = window;
+            _windows[windowType] = window;
             return window;
         }
 
@@ -161,7 +161,7 @@ namespace GameFramework.UI
         {
             var window = new T();
             window.Initialize();
-            _windows[window.WindowName] = window;
+            _windows[typeof(T)] = window;
             return window;
         }
 
