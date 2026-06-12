@@ -1,0 +1,16 @@
+{
+    "name": "GameClient.Generated.Data",
+    "rootNamespace": "",
+    "references": [
+        "GameFramework.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

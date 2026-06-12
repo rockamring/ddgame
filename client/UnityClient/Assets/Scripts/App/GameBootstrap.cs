@@ -91,6 +91,7 @@ namespace GameClient
         private static void RegisterDefaultModules(GameApp app)
         {
             DataManager.ConfigDirectory = Path.Combine(Application.streamingAssetsPath, "Config");
+            DataManager.ConfigBytesProvider = new StreamingAssetsConfigBytesProvider();
 
             var loggerManager = app.GetModule<LoggerManager>();
             if (loggerManager == null)

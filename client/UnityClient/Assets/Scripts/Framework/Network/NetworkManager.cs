@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using GameFramework.Core.GameSystem;
 using GameFramework.Network.Connection;
 using GameFramework.Network.Messages;
@@ -14,6 +15,9 @@ namespace GameFramework.Network
     {
         private readonly TcpConnection _connection = new();
         private readonly MessageDispatcher _dispatcher = new();
+        private readonly ConcurrentQueue<Packet> _packetQueue = new();
+        private readonly ConcurrentQueue<ConnectionState> _stateQueue = new();
+        private readonly ConcurrentQueue<string> _errorQueue = new();
 
         public override string ModuleName => "NetworkManager";
 
@@ -55,7 +59,13 @@ namespace GameFramework.Network
             _connection.OnStateChanged -= OnConnectionStateChanged;
             _connection.OnError -= OnConnectionError;
             _connection.Dispose();
+            DrainQueues();
             _dispatcher.Clear();
+        }
+
+        protected override void OnUpdate(float deltaTime)
+        {
+            DispatchQueuedEvents();
         }
 
         /// <summary>
@@ -120,18 +130,39 @@ namespace GameFramework.Network
 
         private void OnPacketReceived(Packet packet)
         {
-            _dispatcher.Dispatch(packet);
+            _packetQueue.Enqueue(packet);
         }
 
         private void OnConnectionStateChanged(ConnectionState state)
         {
-            OnStateChanged?.Invoke(state);
+            _stateQueue.Enqueue(state);
         }
 
         private void OnConnectionError(string error)
         {
-            Console.WriteLine($"[NetworkManager] Error: {error}");
-            OnError?.Invoke(error);
+            _errorQueue.Enqueue(error);
+        }
+
+        private void DispatchQueuedEvents()
+        {
+            while (_stateQueue.TryDequeue(out var state))
+                OnStateChanged?.Invoke(state);
+
+            while (_errorQueue.TryDequeue(out var error))
+            {
+                Console.WriteLine($"[NetworkManager] Error: {error}");
+                OnError?.Invoke(error);
+            }
+
+            while (_packetQueue.TryDequeue(out var packet))
+                _dispatcher.Dispatch(packet);
+        }
+
+        private void DrainQueues()
+        {
+            while (_packetQueue.TryDequeue(out _)) { }
+            while (_stateQueue.TryDequeue(out _)) { }
+            while (_errorQueue.TryDequeue(out _)) { }
         }
     }
 }

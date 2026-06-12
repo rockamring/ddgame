@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using GameFramework.Core.GameSystem;
 
 namespace GameFramework.Data
@@ -19,12 +21,24 @@ namespace GameFramework.Data
     public class DataManager : GameModule
     {
         private static DataManager? _instance;
+        private static string _configDirectory = "config";
         private readonly Dictionary<Type, object> _tables = new();
 
         /// <summary>
         /// 配置文件目录（相对路径或绝对路径，默认 "config"）
         /// </summary>
-        public static string ConfigDirectory { get; set; } = "config";
+        public static string ConfigDirectory
+        {
+            get => _configDirectory;
+            set
+            {
+                _configDirectory = value;
+                ConfigBytesProvider = new FileConfigBytesProvider(_configDirectory);
+            }
+        }
+
+        public static IConfigBytesProvider ConfigBytesProvider { get; set; } =
+            new FileConfigBytesProvider(_configDirectory);
 
         public override string ModuleName => "DataManager";
 
@@ -79,6 +93,14 @@ namespace GameFramework.Data
         public static void Load<T>(string path) where T : class, IConfigRow
             => LoadFromBytes<T>(File.ReadAllBytes(path));
 
+        public static async Task PreloadAsync<T>(
+            CancellationToken cancellationToken = default) where T : class, IConfigRow
+        {
+            var fileName = GetConfigFileName<T>();
+            var data = await ConfigBytesProvider.LoadAsync(fileName, cancellationToken);
+            LoadFromBytes<T>(data);
+        }
+
         /// <summary>从字节数据加载配置表</summary>
         public static void LoadFromBytes<T>(byte[] data) where T : class, IConfigRow
         {
@@ -122,16 +144,30 @@ namespace GameFramework.Data
 
             // 自动加载：按命名约定查找文件
             var fileName = GetConfigFileName<T>();
-            var path = Path.Combine(ConfigDirectory, fileName);
-
-            if (File.Exists(path))
+            if (!ConfigBytesProvider.SupportsSynchronousLoad)
             {
-                LoadFromBytes<T>(File.ReadAllBytes(path));
-                return (ConfigTable<T>)inst._tables[type];
+                throw new NotSupportedException(
+                    $"配置表 {type.Name} 未预加载，当前配置数据 Provider 不支持同步加载。" +
+                    $"请先调用 DataManager.PreloadAsync<{type.Name}>()。路径: {ConfigBytesProvider.GetDisplayPath(fileName)}");
             }
 
-            throw new FileNotFoundException(
-                $"配置表 {type.Name} 未加载，且未找到自动加载文件: {path}", path);
+            try
+            {
+                LoadFromBytes<T>(ConfigBytesProvider.Load(fileName));
+                return (ConfigTable<T>)inst._tables[type];
+            }
+            catch (FileNotFoundException)
+            {
+                throw;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                var path = ConfigBytesProvider.GetDisplayPath(fileName);
+                throw new FileNotFoundException(
+                    $"配置表 {type.Name} 未加载，且未找到自动加载文件: {path}",
+                    path,
+                    ex);
+            }
         }
 
         private static string GetConfigFileName<T>()
