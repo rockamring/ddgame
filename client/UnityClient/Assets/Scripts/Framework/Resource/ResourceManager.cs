@@ -16,12 +16,18 @@ namespace GameClient.Framework.Resource
         private IResourceProvider[] _providers = Array.Empty<IResourceProvider>();
         private IReadOnlyList<IResourceProvider> _providerView =
             Array.AsReadOnly(Array.Empty<IResourceProvider>());
+        private int _version;
 
         public override string ModuleName => "ResourceManager";
 
         public IResourceProvider? Provider => _providers.Length > 0 ? _providers[0] : null;
 
         public IReadOnlyList<IResourceProvider> Providers => _providerView;
+
+        public ResourceScope CreateScope(string? name = null)
+        {
+            return new ResourceScope(this, name);
+        }
 
         public void SetProvider(IResourceProvider provider)
         {
@@ -65,17 +71,19 @@ namespace GameClient.Framework.Resource
             return true;
         }
 
+        [Obsolete("Use LoadHandle<T> so the caller owns and releases the resource handle, or use ResourceScope/ResourceBinder for automatic lifetime management.", true)]
         public T Load<T>(string path) where T : Object
         {
-            return LoadHandle<T>(path).Asset;
+            throw new NotSupportedException("Use LoadHandle<T> instead.");
         }
 
+        [Obsolete("Use LoadHandleAsync<T> so the caller owns and releases the resource handle, or use ResourceScope/ResourceBinder for automatic lifetime management.", true)]
         public async Task<T> LoadAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {
-            var handle = await LoadHandleAsync<T>(path, cancellationToken);
-            return handle.Asset;
+            await Task.Yield();
+            throw new NotSupportedException("Use LoadHandleAsync<T> instead.");
         }
 
         public ResourceHandle<T> LoadHandle<T>(string path) where T : Object
@@ -155,6 +163,7 @@ namespace GameClient.Framework.Resource
 
         public void Clear()
         {
+            _version++;
             var entries = _cache.Values.ToArray();
             _cache.Clear();
             _loadingTasks.Clear();
@@ -182,7 +191,7 @@ namespace GameClient.Framework.Resource
             if (_loadingTasks.TryGetValue(key, out var existingTask))
                 return existingTask;
 
-            var task = LoadEntryAsync<T>(key, normalizedPath, cancellationToken);
+            var task = LoadEntryAsync<T>(key, normalizedPath, _version, cancellationToken);
             _loadingTasks[key] = task;
             return task;
         }
@@ -190,6 +199,7 @@ namespace GameClient.Framework.Resource
         private async Task<ResourceEntry> LoadEntryAsync<T>(
             string key,
             string normalizedPath,
+            int version,
             CancellationToken cancellationToken) where T : Object
         {
             var provider = FindProvider(normalizedPath, typeof(T), requireSync: false);
@@ -197,6 +207,13 @@ namespace GameClient.Framework.Resource
             try
             {
                 var result = await provider.LoadAsync<T>(normalizedPath, cancellationToken);
+
+                if (version != _version)
+                {
+                    provider.Unload(normalizedPath, result.Asset, result.ReleaseToken);
+                    throw new OperationCanceledException(
+                        $"Resource load was discarded after ResourceManager.Clear(): {normalizedPath}");
+                }
 
                 if (_cache.TryGetValue(key, out var cachedEntry))
                 {
@@ -216,7 +233,7 @@ namespace GameClient.Framework.Resource
                 _cache[key] = entry;
                 return entry;
             }
-            catch (Exception ex) when (ex is not ResourceLoadException)
+            catch (Exception ex) when (ex is not ResourceLoadException && ex is not OperationCanceledException)
             {
                 throw new ResourceLoadException($"Failed to load resource '{normalizedPath}'.", ex);
             }

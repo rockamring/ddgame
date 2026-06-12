@@ -113,6 +113,9 @@ namespace GameClient
             if (resourceManager == null)
                 resourceManager = app.RegisterModule(new ResourceManager());
 
+            if (resourceManager.Providers.All(provider => provider.Name != "Addressables"))
+                resourceManager.AddProvider(new AddressablesProvider());
+
             if (resourceManager.Providers.All(provider => provider.Name != "Resources"))
                 resourceManager.AddProvider(new ResourcesProvider());
 
