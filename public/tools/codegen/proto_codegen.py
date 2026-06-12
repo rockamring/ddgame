@@ -4,8 +4,8 @@ Protobuf 协议 → C# 代码生成器。
 
 从 .proto + .id 文件生成三部分：
   1. C# 消息类 — 由 protoc 生成（Google.Protobuf.IMessage 实现）
-  2. EProtocol.cs — 消息 ID 枚举（框架层）
-  3. {Proto}Handler.cs — GC_ 消息处理器桩 + 自动注册
+  2. EProtocol.cs — 消息 ID 枚举
+  3. {Proto}Handler.Generated.cs — GC_ 消息自动注册与转发
 
 消息 ID 统一定义在 proto.id 中（目录下所有 proto 共用一份）。
 消息命名约定：
@@ -15,8 +15,8 @@ Protobuf 协议 → C# 代码生成器。
 用法：
   python proto_codegen.py \
     --proto-dir public/proto/ \
-    --output-dir client/GameFramework/Network/Protobuf/ \
-    --handler-dir client/GameLogic/Network/Handlers/
+    --output-dir client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/ \
+    --handler-dir client/UnityClient/Assets/Scripts/Generated/Network/Handlers/
 """
 
 import argparse
@@ -170,6 +170,7 @@ def generate_handler_file(proto_filename: str, messages: List[Dict]) -> Optional
     ]
 
     for m in gc_msgs:
+        lines.append(f"            network.Dispatcher.Unregister((ushort)EProtocol.{m['name']});")
         lines.append(
             f"            network.RegisterHandler<{m['name']}>("
             f"(ushort)EProtocol.{m['name']}, Handle{m['name']});"

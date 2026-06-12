@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameFramework.Resource;
 
 namespace GameFramework.Data.Generated
 {
@@ -38,9 +39,19 @@ namespace GameFramework.Data.Generated
         [FieldIndex(5)]
         public int UseType { get; set; }
         /// <summary>
-        /// 描述
+        /// 图标资源
         /// </summary>
         [FieldIndex(6)]
+        public EAssetId Icon { get; set; }
+        /// <summary>
+        /// 模型资源
+        /// </summary>
+        [FieldIndex(7)]
+        public EAssetId ModelPath { get; set; }
+        /// <summary>
+        /// 描述
+        /// </summary>
+        [FieldIndex(8)]
         public string Description { get; set; } = string.Empty;
 
         public int Id => _id;

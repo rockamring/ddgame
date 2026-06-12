@@ -196,9 +196,10 @@ namespace GameRuntime
             Console.WriteLine("\n[Demo] DataManager — 策划配置数据访问");
             try
             {
-                // 构建 config/ItemConfig.cfgb 路径
+                // 构建 Unity StreamingAssets/Config/ItemConfig.cfgb 路径
                 var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                    "..", "..", "..", "..", "..", "config", "ItemConfig.cfgb");
+                    "..", "..", "..", "..", "..",
+                    "client", "UnityClient", "Assets", "StreamingAssets", "Config", "ItemConfig.cfgb");
                 Console.WriteLine($"  加载: {Path.GetFullPath(configPath)}");
                 DataManager.Load<GameFramework.Data.Generated.Config_ItemConfig>(
                     Path.GetFullPath(configPath));
@@ -232,7 +233,7 @@ namespace GameRuntime
             GameHandler.RegisterAll(networkManager);
             Console.WriteLine($"    已注册 {networkManager.Dispatcher.Count} 个 GC_ 处理器");
 
-            Console.WriteLine("  收到 GC_Login 时自动触发 GameHandler.OnGC_Login():");
+            Console.WriteLine("  收到 GC_Login 时自动转发到 GameHandler 业务处理:");
 
             // ========== 10. 演示 ResourceSystem ==========
             Console.WriteLine("\n[Demo] ResourceSystem - sync/async loading and ref counting");

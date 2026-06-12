@@ -12,9 +12,10 @@ game/
 │   │   ├── UI/                ← UI系统
 │   │   ├── Data/              ← 策划数据系统
 │   │   └── Network/           ← 网络层 (Protobuf + TCP)
+│   ├── GameGenerated/         ← 本地验证用生成代码项目（引用 Unity 生成目录）
 │   ├── GameLogic/             ← 游戏逻辑
 │   ├── GameRuntime/           ← 独立运行入口 (.NET 8)
-│   └── UnityClient/           ← (预留) Unity 项目
+│   └── UnityClient/           ← Unity 项目与生成代码/运行时数据
 │
 ├── server/                    ← (预留) 服务端代码
 │
@@ -44,7 +45,6 @@ game/
 
 ### DataSystem（策划数据流）
 - `ConfigTable<T>` 泛型配置表
-- 静态门面类 `ItemConfig.Get(id)` 直接访问，无需关心加载
 - 代码生成：Excel → C#（Python 工具链）
 
 **Excel 表格约定格式：**
@@ -61,7 +61,7 @@ Row 5+: 数据行            1001 | 金币  |  1     |  3
 
 ### 使用方法
 
-自动加载（文件命名约定：`Config_ItemConfig` → `config/ItemConfig.cfgb`）：
+自动加载（文件命名约定：`Config_ItemConfig` → `ItemConfig.cfgb`）：
 ```csharp
 // 按 ID 查找 —— 首次访问自动加载
 var item = DataManager.Get<Config_ItemConfig>(1001);
@@ -82,7 +82,7 @@ DataManager.Load<Config_ItemConfig>("config/ItemConfig.cfgb");
 DataManager.LoadFromBytes<Config_ItemConfig>(binaryData);
 ```
 
-配置目录默认为 `config/`，可在初始化前修改：
+配置目录默认为 `config/`；Unity 启动时会设置为 `Application.streamingAssetsPath/Config`：
 ```csharp
 DataManager.ConfigDirectory = "./config_data";
 ```
@@ -106,11 +106,11 @@ DataManager.ConfigDirectory = "./config_data";
 ```
 策划定义 Excel 表格
     ↓
-config_codegen.py  ──→ C# 代码 (Config_ItemConfig.cs + Table + Facade)
-config_exporter.py ──→ 二进制文件 (config/ItemConfig.cfgb)
+config_codegen.py  ──→ C# 代码 (client/UnityClient/Assets/Scripts/Generated/Data)
+config_exporter.py ──→ 二进制文件 (client/UnityClient/Assets/StreamingAssets/Config)
     ↓
-游戏启动 → ItemConfig.LoadFromFile("config/ItemConfig.cfgb")
-         → ItemConfig.Get(id) 直接查找
+游戏启动 → DataManager 自动加载 ItemConfig.cfgb
+         → DataManager.Get<Config_ItemConfig>(id) 直接查找
 ```
 
 ## 二进制格式 (.cfgb)
@@ -140,14 +140,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\init.ps1
 pip install openpyxl
 python public/tools/codegen/config_codegen.py \
   --input public/config/client/ItemConfig.xlsx \
-  --output-dir client/GameFramework/Data/Generated
+  --output-dir client/UnityClient/Assets/Scripts/Generated/Data
 ```
 
 ### 1b. 导出二进制数据（Excel → .cfgb）
 ```bash
 python public/tools/codegen/config_exporter.py \
   --input public/config/client/ItemConfig.xlsx \
-  --output-dir config/ \
+  --output-dir client/UnityClient/Assets/StreamingAssets/Config \
   --target client
 ```
 
@@ -155,7 +155,8 @@ python public/tools/codegen/config_exporter.py \
 ```bash
 python public/tools/codegen/proto_codegen.py \
   --proto-dir public/proto/ \
-  --output-dir client/GameFramework/Network/Protobuf/
+  --output-dir client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/ \
+  --handler-dir client/UnityClient/Assets/Scripts/Generated/Network/Handlers/
 ```
 
 ### 3. 数据校验
@@ -194,25 +195,25 @@ GC_PlayerDataSync = 1005
 | 前缀 | 方向 | 客户端行为 |
 |------|------|-----------|
 | `CG_` | 客户端→服务器 | 直接发送，无需注册处理器 |
-| `GC_` | 服务器→客户端 | 自动生成处理器桩 + 自动注册 |
+| `GC_` | 服务器→客户端 | 自动生成处理器注册与转发 |
 
 示例：
 - 客户端发送 `CG_Login` → 服务端处理登录
-- 服务端返回 `GC_Login` → 自动触发 `GameHandler.OnGC_Login()`
+- 服务端返回 `GC_Login` → 自动转发到 `GameHandler` 的 partial 业务实现
 
 ### 代码生成
 
 ```bash
 python public/tools/codegen/proto_codegen.py \
   --proto-dir public/proto/ \
-  --output-dir client/GameFramework/Network/Protobuf/ \
-  --handler-dir client/GameLogic/Network/Handlers/
+  --output-dir client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/ \
+  --handler-dir client/UnityClient/Assets/Scripts/Generated/Network/Handlers/
 ```
 
 生成产物：
-- `Generated/Game.cs` — 消息类（protoc 生成，Google.Protobuf.IMessage 实现）
-- `EProtocol.cs` — 消息 ID 枚举
-- `Handlers/GameHandler.cs` — `GC_` 消息处理器，含 `RegisterAll()` + `OnXxx()` 桩
+- `Network/Protobuf/Generated/Game.cs` — 消息类（protoc 生成，Google.Protobuf.IMessage 实现）
+- `Network/Protobuf/EProtocol.cs` — 消息 ID 枚举
+- `Network/Handlers/GameHandler.Generated.cs` — `GC_` 消息注册与转发
 
 ### 使用
 
@@ -227,4 +228,4 @@ networkManager.Send((ushort)EProtocol.CG_Heartbeat, msg);
 GameHandler.RegisterAll(networkManager);
 ```
 
-处理 `GC_` 消息（编辑 `GameHandler.cs` 中对应 `OnXxx()` 方法即可）。
+处理 `GC_` 消息时，编辑 `client/GameLogic/Network/Handlers/GameHandler.cs` 中对应 partial 方法。

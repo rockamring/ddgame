@@ -6,7 +6,7 @@ echo ========================================
 
 for /r %%f in (*.xlsx) do (
     echo [%%~nxf]
-    python ..\tools\codegen\config_exporter.py --input "%%f" --output-dir ..\..\config --target client
+    python ..\tools\codegen\config_exporter.py --input "%%f" --output-dir ..\..\client\UnityClient\Assets\StreamingAssets\Config --target client
     echo.
 )
 

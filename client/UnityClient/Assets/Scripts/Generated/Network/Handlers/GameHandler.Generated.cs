@@ -15,9 +15,13 @@ namespace GameLogic.Network.Handlers
     {
         public static void RegisterAll(NetworkManager network)
         {
+            network.Dispatcher.Unregister((ushort)EProtocol.GC_Heartbeat);
             network.RegisterHandler<GC_Heartbeat>((ushort)EProtocol.GC_Heartbeat, HandleGC_Heartbeat);
+            network.Dispatcher.Unregister((ushort)EProtocol.GC_ErrorNotify);
             network.RegisterHandler<GC_ErrorNotify>((ushort)EProtocol.GC_ErrorNotify, HandleGC_ErrorNotify);
+            network.Dispatcher.Unregister((ushort)EProtocol.GC_Login);
             network.RegisterHandler<GC_Login>((ushort)EProtocol.GC_Login, HandleGC_Login);
+            network.Dispatcher.Unregister((ushort)EProtocol.GC_PlayerDataSync);
             network.RegisterHandler<GC_PlayerDataSync>((ushort)EProtocol.GC_PlayerDataSync, HandleGC_PlayerDataSync);
         }
 

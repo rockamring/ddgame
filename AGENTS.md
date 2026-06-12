@@ -17,18 +17,18 @@ client/
   GameFramework/      核心框架库，目标框架 netstandard2.1，面向 Unity 接入
     Core/             事件、服务定位、游戏模块、状态机等基础系统
     UI/               UI 窗口、层级、栈式导航与管理器
-    Data/             配置表加载、配置管理、生成的配置 C# 代码
+    Data/             配置表加载、配置管理
     Network/          TCP 连接、封包、Protobuf、消息分发
   GameLogic/          游戏业务逻辑与网络消息处理器
   GameRuntime/        .NET 独立运行入口，用于本地验证框架行为
-  UnityClient/        Unity 工程预留目录，后续接入 Assets/Packages/ProjectSettings
+  UnityClient/        Unity 工程目录，包含 Assets/Packages/ProjectSettings 与生成代码/数据
 
 public/
   config/             策划配置源数据，按 client/server 等目标拆分
   proto/              Protobuf 协议定义与 proto.id 消息号映射
   tools/              Python 工具链：配置生成、配置导出、协议生成、数据校验
 
-config/               运行时配置导出目录，如 .cfgb 文件
+config/               旧本地导出目录；运行时 .cfgb 默认提交到 Unity StreamingAssets
 server/               服务端预留目录
 tools/                仓库级初始化/构建脚本
 ```
@@ -114,8 +114,9 @@ Row 5+: 数据
 - `S` 表示仅服务端导出。
 - `CS` 或空值表示客户端和服务端都导出。
 - `X` 表示注释列，不生成代码、不导出数据。
-- 生成的 C# 配置代码放在 `client/GameFramework/Data/Generated`。
-- 运行时二进制配置默认导出到根目录 `config/`。
+- 生成的 C# 配置代码放在 `client/UnityClient/Assets/Scripts/Generated/Data`。
+- 运行时二进制配置默认导出到 `client/UnityClient/Assets/StreamingAssets/Config`。
+- Excel 源表、生成的 C# 配置代码和导出的 `.cfgb` 都应按职责提交：修改表结构时提交源表和生成代码/数据；只修改表数据时提交源表和 `.cfgb`。
 - 不要手写修改生成文件；应修改源表或代码生成器，再重新生成。
 
 ## 协议系统约定
@@ -125,11 +126,11 @@ Row 5+: 数据
 - `CG_` 前缀表示 Client to GameServer。
 - `GC_` 前缀表示 GameServer to Client。
 - 生成产物包括：
-  - `client/GameFramework/Network/Protobuf/Generated/*.cs`
-  - `client/GameFramework/Network/Protobuf/EProtocol.cs`
-  - `client/GameLogic/Network/Handlers/*Handler.cs`
+  - `client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/Generated/*.cs`
+  - `client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/EProtocol.cs`
+  - `client/UnityClient/Assets/Scripts/Generated/Network/Handlers/*Handler.Generated.cs`
 - 不要直接手写修改 Protobuf 生成类；应修改 `.proto`、`proto.id` 或生成器。
-- 对 `GC_` 消息新增处理时，优先在 `GameLogic/Network/Handlers` 中补业务处理。
+- 对 `GC_` 消息新增处理时，优先在 `GameLogic/Network/Handlers` 中补非生成 partial 业务处理。
 
 ## Unity 接入方向
 

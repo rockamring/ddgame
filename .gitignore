@@ -21,7 +21,8 @@ venv/
 # Runtime
 *.log
 
-# Generated config data (exported from Excel)
+# Legacy local runtime config output. Runtime .cfgb data is committed under
+# client/UnityClient/Assets/StreamingAssets/Config.
 /config/
 
 # Unity

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameFramework\GameFramework.csproj" />
+    <ProjectReference Include="..\GameGenerated\GameGenerated.csproj" />
     <ProjectReference Include="..\GameLogic\GameLogic.csproj" />
   </ItemGroup>
 

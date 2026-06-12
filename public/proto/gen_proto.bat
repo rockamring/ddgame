@@ -6,8 +6,8 @@ echo ========================================
 
 python ..\tools\codegen\proto_codegen.py ^
     --proto-dir . ^
-    --output-dir ..\..\client\GameFramework\Network\Protobuf ^
-    --handler-dir ..\..\client\GameLogic\Network\Handlers
+    --output-dir ..\..\client\UnityClient\Assets\Scripts\Generated\Network\Protobuf ^
+    --handler-dir ..\..\client\UnityClient\Assets\Scripts\Generated\Network\Handlers
 
 echo.
 echo Done.

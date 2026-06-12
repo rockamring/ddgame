@@ -26,6 +26,7 @@
 | `list<double>` | `List<double>` | 双精度浮点列表 |
 | `list<string>` | `List<string>` | 字符串列表 |
 | `list<bool>` | `List<bool>` | 布尔列表 |
+| `resource_ref` | `EAssetId` | 资源引用 ID |
 
 ## 元数据标记（第3行）
 
@@ -48,8 +49,10 @@
 
 ```bash
 # 生成代码
-python public/tools/codegen/config_codegen.py --input ItemConfig.xlsx --output-dir ../../client/GameFramework/Data/Generated
+python public/tools/codegen/config_codegen.py --input ItemConfig.xlsx --output-dir ../../client/UnityClient/Assets/Scripts/Generated/Data
 
 # 导出二进制
-python public/tools/codegen/config_exporter.py --input ItemConfig.xlsx --output-dir ../../config --target client
+python public/tools/codegen/config_exporter.py --input ItemConfig.xlsx --output-dir ../../client/UnityClient/Assets/StreamingAssets/Config --target client
 ```
+
+Excel 源表、生成的 C# 配置代码和导出的 `.cfgb` 都需要提交。修改表结构时提交源表、生成代码和 `.cfgb`；只改表数据时提交源表和 `.cfgb`。

@@ -11,13 +11,13 @@ C# 侧通过 [FieldIndex] + 反射按列序读取。
 
 用法：
   # 单文件导出
-  python config_exporter.py --input ../../configs/ItemConfig.xlsx --output-dir ../../config/
+  python config_exporter.py --input ../../configs/ItemConfig.xlsx --output-dir ../../client/UnityClient/Assets/StreamingAssets/Config/
 
   # 导出整个目录
-  python config_exporter.py --all --input-dir ../../configs/ --output-dir ../../config/ --target client
+  python config_exporter.py --all --input-dir ../../configs/ --output-dir ../../client/UnityClient/Assets/StreamingAssets/Config/ --target client
 
   # JSON 转二进制（兼容已有数据）
-  python config_exporter.py --json --input ../../configs/ItemConfig.json --output-dir ../../config/
+  python config_exporter.py --json --input ../../configs/ItemConfig.json --output-dir ../../client/UnityClient/Assets/StreamingAssets/Config/
 """
 
 import argparse
@@ -336,7 +336,7 @@ def main():
     parser = argparse.ArgumentParser(description="配置表 -> .cfgb 二进制导出")
     parser.add_argument("--input", "-i", help="输入文件 (.xlsx / .json)")
     parser.add_argument("--input-dir", "-d", help="输入目录（配合 --all）")
-    parser.add_argument("--output-dir", "-o", default="./config", help="输出目录（默认 ./config）")
+    parser.add_argument("--output-dir", "-o", default="client/UnityClient/Assets/StreamingAssets/Config", help="输出目录（默认 client/UnityClient/Assets/StreamingAssets/Config）")
     parser.add_argument("--target", choices=["client", "server", "all"], default="client",
                         help="目标平台（默认 client，按元数据过滤字段）")
     parser.add_argument("--all", "-a", action="store_true", help="批量导出目录下所有 xlsx")

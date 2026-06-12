@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameFramework\GameFramework.csproj" />
+    <ProjectReference Include="..\GameGenerated\GameGenerated.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\UnityClient\Assets\Scripts\Generated\Network\Handlers\*.cs"
+             Link="Network\Handlers\Generated\%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

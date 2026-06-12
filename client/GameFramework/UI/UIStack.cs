@@ -98,6 +98,30 @@ namespace GameFramework.UI
         }
 
         /// <summary>
+        /// 从栈中移除指定窗口。
+        /// </summary>
+        public bool Remove(UIWindow window)
+        {
+            var node = _stack.Find(window);
+            if (node == null)
+                return false;
+
+            var wasTop = node == _stack.Last;
+            _stack.Remove(node);
+
+            if (wasTop && _stack.Last != null)
+            {
+                var previous = _stack.Last.Value;
+                if (previous.IsOpen)
+                    previous.SetActive(true);
+                else
+                    previous.Open();
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// 清空栈（不关闭窗口）
         /// </summary>
         public void Clear()

@@ -138,6 +138,7 @@ namespace GameFramework.UI
             if (!_windows.TryGetValue(windowType, out var window))
                 return;
 
+            _layerStacks[window.Layer].Remove(window);
             window.Destroy();
             _windows.Remove(windowType);
         }

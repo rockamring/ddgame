@@ -9,12 +9,13 @@ Set-StrictMode -Version Latest
 
 $Root = Split-Path -Parent $PSScriptRoot
 $ConfigDir = Join-Path $Root "public\config\client"
-$RuntimeConfigDir = Join-Path $Root "config"
-$GeneratedConfigDir = Join-Path $Root "client\GameFramework\Data\Generated"
-$ProtoDir = Join-Path $Root "public\proto"
-$ProtoOutputDir = Join-Path $Root "client\GameFramework\Network\Protobuf"
-$HandlerDir = Join-Path $Root "client\GameLogic\Network\Handlers"
 $UnityDir = Join-Path $Root "client\UnityClient"
+$GeneratedRootDir = Join-Path $UnityDir "Assets\Scripts\Generated"
+$RuntimeConfigDir = Join-Path $UnityDir "Assets\StreamingAssets\Config"
+$GeneratedConfigDir = Join-Path $GeneratedRootDir "Data"
+$ProtoDir = Join-Path $Root "public\proto"
+$ProtoOutputDir = Join-Path $GeneratedRootDir "Network\Protobuf"
+$HandlerDir = Join-Path $GeneratedRootDir "Network\Handlers"
 
 function Write-Step($Message) {
     Write-Host ""
@@ -39,6 +40,8 @@ $dirs = @(
     (Join-Path $ProtoOutputDir "Generated"),
     $HandlerDir,
     (Join-Path $UnityDir "Assets"),
+    (Join-Path $UnityDir "Assets\Scripts"),
+    $GeneratedRootDir,
     (Join-Path $UnityDir "ProjectSettings"),
     (Join-Path $UnityDir "Packages")
 )
@@ -110,4 +113,4 @@ if (-not $SkipDotnetBuild) {
 
 Write-Step "Initialization complete"
 Write-Host "Generated config data: $RuntimeConfigDir"
-Write-Host "Unity placeholder: $UnityDir"
+Write-Host "Generated C# code: $GeneratedRootDir"
