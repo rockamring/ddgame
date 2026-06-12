@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GameFramework.Resource;
 
 namespace GameFramework.Data.Generated
 {
@@ -42,12 +41,12 @@ namespace GameFramework.Data.Generated
         /// 图标资源
         /// </summary>
         [FieldIndex(6)]
-        public EAssetId Icon { get; set; }
+        public uint Icon { get; set; }
         /// <summary>
         /// 模型资源
         /// </summary>
         [FieldIndex(7)]
-        public EAssetId ModelPath { get; set; }
+        public uint ModelPath { get; set; }
         /// <summary>
         /// 描述
         /// </summary>

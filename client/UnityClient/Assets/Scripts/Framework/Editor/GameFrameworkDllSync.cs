@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -11,24 +10,11 @@ namespace GameClient.Framework.Editor
     {
         private const string MenuRoot = "Tools/GameFramework/";
 
-        [MenuItem(MenuRoot + "Build And Sync DLLs")]
-        public static void BuildAndSync()
-        {
-            var repoRoot = GetRepoRoot();
-            RunDotnetBuild(repoRoot);
-            Sync();
-        }
-
-        [MenuItem(MenuRoot + "Sync DLLs")]
+        [MenuItem(MenuRoot + "Sync Dependency DLLs")]
         public static void Sync()
         {
-            var repoRoot = GetRepoRoot();
             var pluginDir = Path.Combine(Application.dataPath, "Scripts", "Framework", "Plugins");
             Directory.CreateDirectory(pluginDir);
-
-            CopyRequired(
-                Path.Combine(repoRoot, "client", "GameFramework", "bin", "Debug", "netstandard2.1", "GameFramework.dll"),
-                Path.Combine(pluginDir, "GameFramework.dll"));
 
             CopyRequired(
                 Path.Combine(
@@ -37,37 +23,7 @@ namespace GameClient.Framework.Editor
                 Path.Combine(pluginDir, "Google.Protobuf.dll"));
 
             AssetDatabase.Refresh();
-            Debug.Log("[GameFramework] DLLs synced to Unity Plugins.");
-        }
-
-        private static string GetRepoRoot()
-        {
-            return Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", ".."));
-        }
-
-        private static void RunDotnetBuild(string repoRoot)
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "dotnet",
-                Arguments = "build .\\client\\GameFramework.sln",
-                WorkingDirectory = repoRoot,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            using var process = Process.Start(startInfo);
-            if (process == null)
-                throw new InvalidOperationException("Failed to start dotnet build.");
-
-            var output = process.StandardOutput.ReadToEnd();
-            var error = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0)
-                throw new InvalidOperationException($"dotnet build failed.\n{output}\n{error}");
+            Debug.Log("[GameFramework] dependency DLLs synced to Unity Plugins.");
         }
 
         private static void CopyRequired(string source, string destination)

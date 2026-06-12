@@ -1,11 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GameFramework.Resource;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace GameClient.Framework
+namespace GameClient.Framework.Resource
 {
     public sealed class ResourcesProvider : IResourceProvider
     {
@@ -37,7 +36,7 @@ namespace GameClient.Framework
             return asset != null;
         }
 
-        public T Load<T>(string path) where T : class
+        public ResourceLoadResult<T> Load<T>(string path) where T : Object
         {
             var assetType = typeof(T);
             if (!CanLoad(path, assetType))
@@ -47,11 +46,15 @@ namespace GameClient.Framework
             if (asset == null)
                 throw new ResourceLoadException($"Unity Resources asset was not found: {path}");
 
-            return asset as T
+            var typedAsset = asset as T
                 ?? throw new ResourceLoadException($"Unity Resources asset '{path}' is not '{assetType.FullName}'.");
+
+            return new ResourceLoadResult<T>(typedAsset);
         }
 
-        public async Task<T> LoadAsync<T>(string path, CancellationToken cancellationToken = default) where T : class
+        public async Task<ResourceLoadResult<T>> LoadAsync<T>(
+            string path,
+            CancellationToken cancellationToken = default) where T : Object
         {
             var assetType = typeof(T);
             if (!CanLoad(path, assetType))
@@ -68,19 +71,21 @@ namespace GameClient.Framework
             if (request.asset == null)
                 throw new ResourceLoadException($"Unity Resources asset was not found: {path}");
 
-            return request.asset as T
+            var typedAsset = request.asset as T
                 ?? throw new ResourceLoadException($"Unity Resources asset '{path}' is not '{assetType.FullName}'.");
+
+            return new ResourceLoadResult<T>(typedAsset);
         }
 
-        public void Unload(string path, object asset)
+        public void Unload(string path, Object asset, object? releaseToken)
         {
-            if (asset is not Object unityObject || unityObject == null)
+            if (asset == null)
                 return;
 
-            if (unityObject is GameObject)
+            if (asset is GameObject)
                 return;
 
-            Resources.UnloadAsset(unityObject);
+            Resources.UnloadAsset(asset);
         }
 
         private static bool HasUnsupportedScheme(string path)

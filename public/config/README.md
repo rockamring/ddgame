@@ -26,7 +26,7 @@
 | `list<double>` | `List<double>` | 双精度浮点列表 |
 | `list<string>` | `List<string>` | 字符串列表 |
 | `list<bool>` | `List<bool>` | 布尔列表 |
-| `resource_ref` | `EAssetId` | 资源引用 ID |
+| `resource_ref` | `uint` | 资源引用 ID |
 
 ## 元数据标记（第3行）
 

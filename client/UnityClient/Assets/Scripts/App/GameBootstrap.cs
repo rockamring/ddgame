@@ -1,10 +1,13 @@
 using System.IO;
 using System.Linq;
 using GameClient.Framework;
+using GameClient.Framework.Resource;
 using GameFramework.Core.GameSystem;
 using GameFramework.Data;
+using GameFramework.Logging;
 using GameFramework.Network;
-using GameFramework.Resource;
+using GameFramework.Save;
+using GameFramework.Time;
 using GameFramework.UI;
 using UnityEngine;
 
@@ -17,6 +20,7 @@ namespace GameClient
         [SerializeField] private bool registerDefaultModules = true;
         [SerializeField] private bool dontDestroyOnLoad = true;
         [SerializeField] private bool shutdownOnDestroy = true;
+        [SerializeField] private bool runFeatureValidation = true;
 
         private static GameBootstrap? s_instance;
         private GameApp? _app;
@@ -58,6 +62,9 @@ namespace GameClient
 
             _app.Initialize();
             Debug.Log("[GameFramework] Initialized.");
+
+            if (runFeatureValidation && GetComponent<FrameworkFeatureValidation>() == null)
+                gameObject.AddComponent<FrameworkFeatureValidation>();
         }
 
         private void Update()
@@ -85,6 +92,13 @@ namespace GameClient
         {
             DataManager.ConfigDirectory = Path.Combine(Application.streamingAssetsPath, "Config");
 
+            var loggerManager = app.GetModule<LoggerManager>();
+            if (loggerManager == null)
+                loggerManager = app.RegisterModule(new LoggerManager());
+            loggerManager.MinLevel = LogLevel.Debug;
+            loggerManager.ClearSinks();
+            loggerManager.AddSink(new UnityLogSink());
+
             if (app.GetModule<UIManager>() == null)
                 app.RegisterModule(new UIManager());
 
@@ -100,6 +114,15 @@ namespace GameClient
 
             if (resourceManager.Providers.All(provider => provider.Name != "Resources"))
                 resourceManager.AddProvider(new ResourcesProvider());
+
+            if (app.GetModule<TimerManager>() == null)
+                app.RegisterModule(new TimerManager());
+
+            var saveManager = app.GetModule<SaveManager>();
+            if (saveManager == null)
+                saveManager = app.RegisterModule(new SaveManager());
+            saveManager.Provider = new LocalFileStorageProvider(
+                Path.Combine(Application.persistentDataPath, "SaveData"));
         }
 
         private void Shutdown()

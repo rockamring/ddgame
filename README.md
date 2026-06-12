@@ -1,231 +1,434 @@
 # Game Client Framework
 
-æ¸¸æˆå®¢æˆ·ç«¯æ¶æ„æ¡†æ¶ï¼Œä»é›¶æ„å»ºã€‚
+æ¸¸æˆå®¢æˆ·ç«¯æ¶æ„æ¡†æ¶ï¼Œä»é›¶æ„å»ºã€?
 
 ## é¡¹ç›®ç»“æ„
 
 ```
 game/
-â”œâ”€â”€ client/                    â† å®¢æˆ·ç«¯ C# ä»£ç 
-â”‚   â”œâ”€â”€ GameFramework/         â† æ ¸å¿ƒæ¡†æ¶ (.NET Standard 2.1)
-â”‚   â”‚   â”œâ”€â”€ Core/              â† æ ¸å¿ƒæ¨¡å— (Event/Game/Service)
-â”‚   â”‚   â”œâ”€â”€ UI/                â† UIç³»ç»Ÿ
-â”‚   â”‚   â”œâ”€â”€ Data/              â† ç­–åˆ’æ•°æ®ç³»ç»Ÿ
-â”‚   â”‚   â””â”€â”€ Network/           â† ç½‘ç»œå±‚ (Protobuf + TCP)
-â”‚   â”œâ”€â”€ GameGenerated/         â† æœ¬åœ°éªŒè¯ç”¨ç”Ÿæˆä»£ç é¡¹ç›®ï¼ˆå¼•ç”¨ Unity ç”Ÿæˆç›®å½•ï¼‰
-â”‚   â”œâ”€â”€ GameLogic/             â† æ¸¸æˆé€»è¾‘
-â”‚   â”œâ”€â”€ GameRuntime/           â† ç‹¬ç«‹è¿è¡Œå…¥å£ (.NET 8)
-â”‚   â””â”€â”€ UnityClient/           â† Unity é¡¹ç›®ä¸ç”Ÿæˆä»£ç /è¿è¡Œæ—¶æ•°æ®
-â”‚
-â”œâ”€â”€ server/                    â† (é¢„ç•™) æœåŠ¡ç«¯ä»£ç 
-â”‚
-â””â”€â”€ public/                    â† å…¬å…±èµ„æº
-    â”œâ”€â”€ tools/                 â† Python å·¥å…·é“¾
-    â”œâ”€â”€ config/                â† ç­–åˆ’é…ç½®æ•°æ®
-    â””â”€â”€ proto/                 â† Protobuf åè®®å®šä¹‰
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 ## æ ¸å¿ƒæ¨¡å—
 
 ### EventSystemï¼ˆäº‹ä»¶ç³»ç»Ÿï¼‰
-- ç±»å‹å®‰å…¨çš„äº‹ä»¶åˆ†å‘ï¼ˆ`IEvent` + `GameEvent<T>`ï¼‰
-- ä¼˜å…ˆçº§æ’åº + ä¸€æ¬¡æ€§ç›‘å¬
-- å…¨å±€ `EventBus` é™æ€å…¥å£
+- ç±»å‹å®‰å…¨çš„äº‹ä»¶åˆ†å‘ï¼ˆ`IEvent` + `GameEvent<T>`ï¼?
+- ä¼˜å…ˆçº§æ’åº?+ ä¸€æ¬¡æ€§ç›‘å?
+- å…¨å±€ `EventBus` é™æ€å…¥å?
 
 ### GameSystemï¼ˆæ¸¸æˆç³»ç»Ÿï¼‰
-- `GameApp` å•ä¾‹ä¸»å¾ªç¯
+- `GameApp` å•ä¾‹ä¸»å¾ªç?
 - `GameModule` æ¨¡å—ç”Ÿå‘½å‘¨æœŸ
 - `GameStateMachine` çŠ¶æ€æœº
 - `ServiceLocator` æœåŠ¡å®¹å™¨
 
-### UISystemï¼ˆUIç³»ç»Ÿï¼‰
+### UISystemï¼ˆUIç³»ç»Ÿï¼?
 - `UIManager` çª—å£ç®¡ç†
-- `UIWindow` çª—å£ç”Ÿå‘½å‘¨æœŸï¼ˆInit â†’ Open â†’ Close â†’ Destroyï¼‰
-- å¤šå±‚æ ˆå¼å¯¼èˆªï¼ˆ`UIStack`ï¼‰
+- `UIWindow` çª—å£ç”Ÿå‘½å‘¨æœŸï¼ˆInit â†?Open â†?Close â†?Destroyï¼?
+- å¤šå±‚æ ˆå¼å¯¼èˆªï¼ˆ`UIStack`ï¼?
 
-### DataSystemï¼ˆç­–åˆ’æ•°æ®æµï¼‰
-- `ConfigTable<T>` æ³›å‹é…ç½®è¡¨
-- ä»£ç ç”Ÿæˆï¼šExcel â†’ C#ï¼ˆPython å·¥å…·é“¾ï¼‰
+### DataSystemï¼ˆç­–åˆ’æ•°æ®æµï¼?
+- `ConfigTable<T>` æ³›å‹é…ç½®è¡?
+- ä»£ç ç”Ÿæˆï¼šExcel â†?C#ï¼ˆPython å·¥å…·é“¾ï¼‰
 
-**Excel è¡¨æ ¼çº¦å®šæ ¼å¼ï¼š**
+**Excel è¡¨æ ¼çº¦å®šæ ¼å¼ï¼?*
 ```
-Row 1: è¡¨å¤´ï¼ˆå­—æ®µåï¼‰       id  |  name  |  type  |  quality
-Row 2: ç±»å‹ï¼ˆint/stringï¼‰  int | string |  int   |  int
-Row 3: å…ƒæ•°æ®æ ‡è®°         CS  |  CS    |  C     |  S
-Row 4: æ³¨é‡Šè¯´æ˜           å”¯ä¸€ID | ç‰©å“å | å®¢æˆ·ç«¯ | æœåŠ¡ç«¯
-Row 5+: æ•°æ®è¡Œ            1001 | é‡‘å¸  |  1     |  3
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
-- `C` = ä»…å®¢æˆ·ç«¯  `S` = ä»…æœåŠ¡ç«¯  `CS`(æˆ–ç©º) = éƒ½ç”Ÿæˆ  `X` = æ³¨é‡Šåˆ—ï¼ˆä¸å¯¼å‡ºã€ä¸ç”Ÿæˆä»£ç ï¼‰
-- `CS` æ˜¯é»˜è®¤å€¼ï¼Œå…ƒæ•°æ®æ ¼ç•™ç©ºç­‰ä»·äº `CS`
-- ä½¿ç”¨ `--target client` æˆ– `--target server` æŒ‰å¹³å°è¿‡æ»¤
+- `C` = ä»…å®¢æˆ·ç«¯  `S` = ä»…æœåŠ¡ç«¯  `CS`(æˆ–ç©º) = éƒ½ç”Ÿæˆ? `X` = æ³¨é‡Šåˆ—ï¼ˆä¸å¯¼å‡ºã€ä¸ç”Ÿæˆä»£ç ï¼?
+- `CS` æ˜¯é»˜è®¤å€¼ï¼Œå…ƒæ•°æ®æ ¼ç•™ç©ºç­‰ä»·äº?`CS`
+- ä½¿ç”¨ `--target client` æˆ?`--target server` æŒ‰å¹³å°è¿‡æ»?
 
 ### ä½¿ç”¨æ–¹æ³•
 
-è‡ªåŠ¨åŠ è½½ï¼ˆæ–‡ä»¶å‘½åçº¦å®šï¼š`Config_ItemConfig` â†’ `ItemConfig.cfgb`ï¼‰ï¼š
-```csharp
-// æŒ‰ ID æŸ¥æ‰¾ â€”â€” é¦–æ¬¡è®¿é—®è‡ªåŠ¨åŠ è½½
-var item = DataManager.Get<Config_ItemConfig>(1001);
-string name = item.Name;
-
-// éå†
-foreach (var item in DataManager.All<Config_ItemConfig>()) { ... }
-
-// å…¶ä»–æŸ¥è¯¢
-bool found = DataManager.TryGet<Config_ItemConfig>(2001, out var row);
-bool exists = DataManager.Contains<Config_ItemConfig>(3001);
-int count = DataManager.Count<Config_ItemConfig>();
+è‡ªåŠ¨åŠ è½½ï¼ˆæ–‡ä»¶å‘½åçº¦å®šï¼š`Config_ItemConfig` â†?`ItemConfig.cfgb`ï¼‰ï¼š
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-æ‰‹åŠ¨æŒ‡å®šè·¯å¾„åŠ è½½ï¼š
-```csharp
-DataManager.Load<Config_ItemConfig>("config/ItemConfig.cfgb");
-DataManager.LoadFromBytes<Config_ItemConfig>(binaryData);
+æ‰‹åŠ¨æŒ‡å®šè·¯å¾„åŠ è½½ï¼?
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-é…ç½®ç›®å½•é»˜è®¤ä¸º `config/`ï¼›Unity å¯åŠ¨æ—¶ä¼šè®¾ç½®ä¸º `Application.streamingAssetsPath/Config`ï¼š
-```csharp
-DataManager.ConfigDirectory = "./config_data";
+é…ç½®ç›®å½•é»˜è®¤ä¸?`config/`ï¼›Unity å¯åŠ¨æ—¶ä¼šè®¾ç½®ä¸?`Application.streamingAssetsPath/Config`ï¼?```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-### NetworkSystemï¼ˆç½‘ç»œå±‚ï¼‰
+### NetworkSystemï¼ˆç½‘ç»œå±‚ï¼?
 - TCP å¼‚æ­¥è¿æ¥ï¼ˆè‡ªåŠ¨é‡è¿ï¼‰
-- Protobuf æ¶ˆæ¯åºåˆ—åŒ–
+- Protobuf æ¶ˆæ¯åºåˆ—åŒ?
 - `MessageDispatcher` æ¶ˆæ¯è·¯ç”±
-- `[MessageHandler]` å±æ€§æ ‡è®°
+- `[MessageHandler]` å±æ€§æ ‡è®?
 
-### Python å·¥å…·é“¾
+### Python å·¥å…·é“?
 | å·¥å…· | åŠŸèƒ½ |
 |------|------|
-| `config_codegen.py` | Excel/JSON é…ç½®è¡¨ â†’ C# ä»£ç  |
-| `config_exporter.py` | Excel é…ç½®è¡¨ â†’ äºŒè¿›åˆ¶ .cfgb æ–‡ä»¶ï¼ˆè¿è¡Œæ—¶åŠ è½½ï¼‰ |
-| `proto_codegen.py`  | .proto â†’ C# æšä¸¾ + æ³¨å†Œä»£ç  |
+| `config_codegen.py` | Excel/JSON é…ç½®è¡?â†?C# ä»£ç  |
+| `config_exporter.py` | Excel é…ç½®è¡?â†?äºŒè¿›åˆ?.cfgb æ–‡ä»¶ï¼ˆè¿è¡Œæ—¶åŠ è½½ï¼?|
+| `proto_codegen.py`  | .proto â†?C# æšä¸¾ + æ³¨å†Œä»£ç  |
 | `validators.py`     | æ•°æ®æ ¡éªŒ |
 
-## æ•°æ®æµ
+## æ•°æ®æµ?
 
 ```
-ç­–åˆ’å®šä¹‰ Excel è¡¨æ ¼
-    â†“
-config_codegen.py  â”€â”€â†’ C# ä»£ç  (client/UnityClient/Assets/Scripts/Generated/Data)
-config_exporter.py â”€â”€â†’ äºŒè¿›åˆ¶æ–‡ä»¶ (client/UnityClient/Assets/StreamingAssets/Config)
-    â†“
-æ¸¸æˆå¯åŠ¨ â†’ DataManager è‡ªåŠ¨åŠ è½½ ItemConfig.cfgb
-         â†’ DataManager.Get<Config_ItemConfig>(id) ç›´æ¥æŸ¥æ‰¾
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-## äºŒè¿›åˆ¶æ ¼å¼ (.cfgb)
+## äºŒè¿›åˆ¶æ ¼å¼?(.cfgb)
 
-è‡ªå®šä¹‰ç´§å‡‘æ ¼å¼ï¼Œæ— å­—æ®µå…ƒæ•°æ®ï¼Œä»£ç å’Œæ•°æ®ä¸¥æ ¼é…å¯¹ï¼š
+è‡ªå®šä¹‰ç´§å‡‘æ ¼å¼ï¼Œæ— å­—æ®µå…ƒæ•°æ®ï¼Œä»£ç å’Œæ•°æ®ä¸¥æ ¼é…å¯¹ï¼?
 
 ```
-[4B MAGIC "CFGB"] [4B è¡Œæ•°] [é€è¡Œå­—æ®µå€¼ packed]
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-C# ä¾§é€šè¿‡ `[FieldIndex(N)]` å±æ€§æ ‡æ³¨å­—æ®µé¡ºåºï¼Œåå°„æŒ‰åºåˆ—è¯»å–ã€‚
+C# ä¾§é€šè¿‡ `[FieldIndex(N)]` å±æ€§æ ‡æ³¨å­—æ®µé¡ºåºï¼Œåå°„æŒ‰åºåˆ—è¯»å–ã€?
 
-## å¿«é€Ÿå¼€å§‹
-
+## å¿«é€Ÿå¼€å§?
 ### 0. åˆå§‹åŒ–å·¥å…·é“¾
-```bat
-init.bat
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 æˆ–ï¼š
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\init.ps1
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-### 1. ç”Ÿæˆ C# é…ç½®ä»£ç ï¼ˆExcel â†’ C#ï¼‰
-```bash
-pip install openpyxl
-python public/tools/codegen/config_codegen.py \
-  --input public/config/client/ItemConfig.xlsx \
-  --output-dir client/UnityClient/Assets/Scripts/Generated/Data
+### 1. ç”Ÿæˆ C# é…ç½®ä»£ç ï¼ˆExcel â†?C#ï¼?```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-### 1b. å¯¼å‡ºäºŒè¿›åˆ¶æ•°æ®ï¼ˆExcel â†’ .cfgbï¼‰
-```bash
-python public/tools/codegen/config_exporter.py \
-  --input public/config/client/ItemConfig.xlsx \
-  --output-dir client/UnityClient/Assets/StreamingAssets/Config \
-  --target client
+### 1b. å¯¼å‡ºäºŒè¿›åˆ¶æ•°æ®ï¼ˆExcel â†?.cfgbï¼?
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 ### 2. ç”Ÿæˆåè®®ä»£ç 
-```bash
-python public/tools/codegen/proto_codegen.py \
-  --proto-dir public/proto/ \
-  --output-dir client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/ \
-  --handler-dir client/UnityClient/Assets/Scripts/Generated/Network/Handlers/
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 ### 3. æ•°æ®æ ¡éªŒ
-```bash
-python public/tools/data/validators.py --config-dir public/config/client/
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-### 4. æ„å»ºè¿è¡Œï¼ˆéœ€ .NET 8 SDKï¼‰
-```bash
-dotnet build client/GameFramework.sln
-dotnet run --project client/GameRuntime/
+### 4. æ„å»ºè¿è¡Œï¼ˆéœ€ .NET 8 SDKï¼?
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 ## åè®®æ ¼å¼
 
 ```
- [4å­—èŠ‚:æ€»åŒ…é•¿] [2å­—èŠ‚:æ¶ˆæ¯ID] [Protobufæ¶ˆæ¯ä½“]
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 ### æ¶ˆæ¯ ID å®šä¹‰
 
-æ¶ˆæ¯ ID ç»Ÿä¸€å®šä¹‰åœ¨ `proto.id` æ–‡ä»¶ä¸­ï¼ˆç›®å½•ä¸‹æ‰€æœ‰ proto å…±ç”¨ä¸€ä»½ï¼‰ï¼Œå‰åç«¯å…±ç”¨ä¿è¯ ID ä¸¥æ ¼åŒ¹é…ï¼š
+æ¶ˆæ¯ ID ç»Ÿä¸€å®šä¹‰åœ?`proto.id` æ–‡ä»¶ä¸­ï¼ˆç›®å½•ä¸‹æ‰€æœ?proto å…±ç”¨ä¸€ä»½ï¼‰ï¼Œå‰åç«¯å…±ç”¨ä¿è¯ ID ä¸¥æ ¼åŒ¹é…ï¼?
 
 ```
-# public/proto/proto.id
-CG_Heartbeat = 1000
-GC_Heartbeat = 1001
-GC_ErrorNotify = 1002
-CG_Login = 1003
-GC_Login = 1004
-GC_PlayerDataSync = 1005
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
 ### æ¶ˆæ¯å‘½åçº¦å®š
 
-| å‰ç¼€ | æ–¹å‘ | å®¢æˆ·ç«¯è¡Œä¸º |
+| å‰ç¼€ | æ–¹å‘ | å®¢æˆ·ç«¯è¡Œä¸?|
 |------|------|-----------|
-| `CG_` | å®¢æˆ·ç«¯â†’æœåŠ¡å™¨ | ç›´æ¥å‘é€ï¼Œæ— éœ€æ³¨å†Œå¤„ç†å™¨ |
-| `GC_` | æœåŠ¡å™¨â†’å®¢æˆ·ç«¯ | è‡ªåŠ¨ç”Ÿæˆå¤„ç†å™¨æ³¨å†Œä¸è½¬å‘ |
+| `CG_` | å®¢æˆ·ç«¯â†’æœåŠ¡å™?| ç›´æ¥å‘é€ï¼Œæ— éœ€æ³¨å†Œå¤„ç†å™?|
+| `GC_` | æœåŠ¡å™¨â†’å®¢æˆ·ç«?| è‡ªåŠ¨ç”Ÿæˆå¤„ç†å™¨æ³¨å†Œä¸è½¬å‘ |
 
-ç¤ºä¾‹ï¼š
-- å®¢æˆ·ç«¯å‘é€ `CG_Login` â†’ æœåŠ¡ç«¯å¤„ç†ç™»å½•
-- æœåŠ¡ç«¯è¿”å› `GC_Login` â†’ è‡ªåŠ¨è½¬å‘åˆ° `GameHandler` çš„ partial ä¸šåŠ¡å®ç°
+ç¤ºä¾‹ï¼?
+- å®¢æˆ·ç«¯å‘é€?`CG_Login` â†?æœåŠ¡ç«¯å¤„ç†ç™»å½?
+- æœåŠ¡ç«¯è¿”å›?`GC_Login` â†?è‡ªåŠ¨è½¬å‘åˆ?`GameHandler` çš?partial ä¸šåŠ¡å®ç°
 
 ### ä»£ç ç”Ÿæˆ
 
-```bash
-python public/tools/codegen/proto_codegen.py \
-  --proto-dir public/proto/ \
-  --output-dir client/UnityClient/Assets/Scripts/Generated/Network/Protobuf/ \
-  --handler-dir client/UnityClient/Assets/Scripts/Generated/Network/Handlers/
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-ç”Ÿæˆäº§ç‰©ï¼š
-- `Network/Protobuf/Generated/Game.cs` â€” æ¶ˆæ¯ç±»ï¼ˆprotoc ç”Ÿæˆï¼ŒGoogle.Protobuf.IMessage å®ç°ï¼‰
-- `Network/Protobuf/EProtocol.cs` â€” æ¶ˆæ¯ ID æšä¸¾
-- `Network/Handlers/GameHandler.Generated.cs` â€” `GC_` æ¶ˆæ¯æ³¨å†Œä¸è½¬å‘
-
+ç”Ÿæˆäº§ç‰©ï¼?
+- `Network/Protobuf/Generated/Game.cs` â€?æ¶ˆæ¯ç±»ï¼ˆprotoc ç”Ÿæˆï¼ŒGoogle.Protobuf.IMessage å®ç°ï¼?- `Network/Protobuf/EProtocol.cs` â€?æ¶ˆæ¯ ID æšä¸¾
+- `Network/Handlers/GameHandler.Generated.cs` â€?`GC_` æ¶ˆæ¯æ³¨å†Œä¸è½¬å?
 ### ä½¿ç”¨
 
-å‘é€ `CG_` æ¶ˆæ¯ï¼š
-```csharp
-var msg = new CG_Heartbeat { ClientTime = 12345 };
-networkManager.Send((ushort)EProtocol.CG_Heartbeat, msg);
+å‘é€?`CG_` æ¶ˆæ¯ï¼?
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-æ³¨å†Œå¤„ç†å™¨ï¼ˆä¸€æ¬¡åˆå§‹åŒ–ï¼Œè‡ªåŠ¨ç»‘å®šæ‰€æœ‰ `GC_` å›è°ƒï¼‰ï¼š
-```csharp
-GameHandler.RegisterAll(networkManager);
+æ³¨å†Œå¤„ç†å™¨ï¼ˆä¸€æ¬¡åˆå§‹åŒ–ï¼Œè‡ªåŠ¨ç»‘å®šæ‰€æœ?`GC_` å›è°ƒï¼‰ï¼š
+```
+game/
+©À©¤©¤ client/
+©¦   ©¸©¤©¤ UnityClient/                    ¡û Unity ÏîÄ¿¡¢¿ò¼ÜÔ´Âë¡¢ÒµÎñÔ´Âë¡¢Éú³É´úÂëÓëÔËĞĞÊ±Êı¾İ
+©¦       ©¸©¤©¤ Assets/Scripts/
+©¦           ©À©¤©¤ App/                    ¡û Unity Æô¶¯ÓëÑéÖ¤Èë¿Ú
+©¦           ©À©¤©¤ Framework/              ¡û ¿Í»§¶Ë¿ò¼ÜÔ´Âë
+©¦           ©¦   ©À©¤©¤ Core/               ¡û ºËĞÄÄ£¿é (Event/Game/Service)
+©¦           ©¦   ©À©¤©¤ UI/                 ¡û UI ÏµÍ³
+©¦           ©¦   ©À©¤©¤ Data/               ¡û ²ß»®Êı¾İÏµÍ³
+©¦           ©¦   ©À©¤©¤ Network/            ¡û ÍøÂç²ã (Protobuf + TCP)
+©¦           ©¦   ©¸©¤©¤ Resource/           ¡û Unity ²à×ÊÔ´ÏµÍ³
+©¦           ©À©¤©¤ GameLogic/              ¡û ÓÎÏ·ÒµÎñÂß¼­
+©¦           ©¸©¤©¤ Generated/              ¡û ÅäÖÃÓëĞ­ÒéÉú³É´úÂë
+©À©¤©¤ server/                             ¡û ·şÎñ¶ËÔ¤Áô
+©¸©¤©¤ public/                             ¡û ¹«¹²×ÊÔ´¡¢ÅäÖÃ¡¢Ğ­ÒéÓë¹¤¾ßÁ´
 ```
 
-å¤„ç† `GC_` æ¶ˆæ¯æ—¶ï¼Œç¼–è¾‘ `client/GameLogic/Network/Handlers/GameHandler.cs` ä¸­å¯¹åº” partial æ–¹æ³•ã€‚
+å¤„ç† `GC_` æ¶ˆæ¯æ—¶ï¼Œç¼–è¾‘ `client/UnityClient/Assets/Scripts/GameLogic/Network/Handlers/GameHandler.cs` ä¸­å¯¹åº?partial æ–¹æ³•ã€?

@@ -1,7 +1,6 @@
 param(
     [switch]$SkipPythonCheck,
-    [switch]$SkipCodegen,
-    [switch]$SkipDotnetBuild
+    [switch]$SkipCodegen
 )
 
 $ErrorActionPreference = "Stop"
@@ -28,7 +27,7 @@ function Require-Command($Name, $InstallHint) {
     }
 }
 
-Write-Host "Game client framework initialization"
+Write-Host "Unity client initialization"
 Write-Host "Root: $Root"
 
 Write-Step "Ensuring project directories"
@@ -85,30 +84,6 @@ if (-not $SkipCodegen) {
         --proto-dir $ProtoDir `
         --output-dir $ProtoOutputDir `
         --handler-dir $HandlerDir
-}
-
-if (-not $SkipDotnetBuild) {
-    Write-Step "Checking .NET SDK"
-    Require-Command "dotnet" "Install .NET 8 SDK."
-    $sdkVersions = dotnet --list-sdks | ForEach-Object { ($_ -split " ")[0] }
-    $hasCompatibleSdk = $false
-    foreach ($version in $sdkVersions) {
-        $major = 0
-        if ([int]::TryParse(($version -split "\.")[0], [ref]$major) -and $major -ge 8) {
-            $hasCompatibleSdk = $true
-            break
-        }
-    }
-
-    if (-not $hasCompatibleSdk) {
-        Write-Warning ".NET SDK 8 or newer was not found. Skipping build. Install .NET 8 SDK or newer to build client/GameFramework.sln."
-    }
-    else {
-        dotnet build (Join-Path $Root "client\GameFramework.sln")
-        if ($LASTEXITCODE -ne 0) {
-            throw "dotnet build failed with exit code $LASTEXITCODE."
-        }
-    }
 }
 
 Write-Step "Initialization complete"

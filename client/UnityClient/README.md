@@ -4,17 +4,23 @@ Unity 2022.3 client project.
 
 ## GameFramework integration
 
-`GameFramework` is consumed as a precompiled DLL under:
+`GameFramework` source code lives under:
 
 ```text
-Assets/Scripts/Framework/Plugins/GameFramework.dll
-Assets/Scripts/Framework/Plugins/Google.Protobuf.dll
+Assets/Scripts/Framework/Core/
+Assets/Scripts/Framework/Data/
+Assets/Scripts/Framework/Logging/
+Assets/Scripts/Framework/Network/
+Assets/Scripts/Framework/Save/
+Assets/Scripts/Framework/Time/
+Assets/Scripts/Framework/UI/
 ```
 
-Unity-specific code stays in this Unity project:
+Unity-specific framework code stays in this Unity project:
 
 ```text
 Assets/Scripts/App/GameBootstrap.cs
+Assets/Scripts/Framework/Resource/
 Assets/Scripts/Framework/Adapters/ResourcesProvider.cs
 Assets/Scripts/Generated/
 Assets/StreamingAssets/Config/
@@ -26,18 +32,18 @@ Assets/StreamingAssets/Config/
 
 Generated C# code and exported `.cfgb` files are committed under `Assets/Scripts/Generated` and `Assets/StreamingAssets/Config`. Run the repository root `init.bat` after changing config tables, proto files, or generators.
 
-## Sync DLLs
+## Sync dependency DLLs
 
-After changing `client/GameFramework`, rebuild and sync the DLLs from Unity:
-
-```text
-Tools/GameFramework/Build And Sync DLLs
-```
-
-Or sync already-built DLLs:
+`Google.Protobuf.dll` is consumed as a precompiled dependency under:
 
 ```text
-Tools/GameFramework/Sync DLLs
+Assets/Scripts/Framework/Plugins/Google.Protobuf.dll
 ```
 
-The framework should remain Unity-agnostic. Add Unity APIs, Addressables, AssetBundle, HybridCLR, Input System, AudioMixer, and scene-specific behavior in this Unity project as adapters.
+After changing protocol dependencies, sync dependency DLLs from Unity:
+
+```text
+Tools/GameFramework/Sync Dependency DLLs
+```
+
+The framework source is now part of the Unity project. Keep Unity APIs, Addressables, AssetBundle, HybridCLR, Input System, AudioMixer, and scene-specific behavior in Unity-side folders such as `Resource`, `Adapters`, or feature-specific services.
