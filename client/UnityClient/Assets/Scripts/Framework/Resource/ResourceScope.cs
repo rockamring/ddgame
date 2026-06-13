@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -39,15 +39,15 @@ namespace GameClient.Framework.Resource
         }
 
         [Obsolete("Use LoadHandleAsync<T> so scoped ownership is visible at the call site.", true)]
-        public async Task<T> LoadAsync<T>(
+        public async UniTask<T> LoadAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {
-            await Task.Yield();
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             throw new NotSupportedException("Use LoadHandleAsync<T> instead.");
         }
 
-        public async Task<ResourceHandle<T>> LoadHandleAsync<T>(
+        public async UniTask<ResourceHandle<T>> LoadHandleAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {

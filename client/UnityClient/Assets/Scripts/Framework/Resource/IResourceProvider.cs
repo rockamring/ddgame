@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -20,7 +20,7 @@ namespace GameClient.Framework.Resource
 
         ResourceLoadResult<T> Load<T>(string path) where T : Object;
 
-        Task<ResourceLoadResult<T>> LoadAsync<T>(
+        UniTask<ResourceLoadResult<T>> LoadAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object;
 

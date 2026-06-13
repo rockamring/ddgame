@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -60,10 +60,12 @@ namespace GameClient.Framework.Resource
             throw new NotSupportedException("AddressablesProvider only supports asynchronous loading.");
         }
 
-        public async Task<ResourceLoadResult<T>> LoadAsync<T>(
+        public async UniTask<ResourceLoadResult<T>> LoadAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {
+            await UniTask.SwitchToMainThread(cancellationToken);
+
             var assetType = typeof(T);
             if (!CanLoad(path, assetType))
                 throw new ResourceLoadException($"Addressables cannot load '{path}' as '{assetType.FullName}'.");
@@ -76,7 +78,7 @@ namespace GameClient.Framework.Resource
                 while (!handle.IsDone)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await Task.Yield();
+                    await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();

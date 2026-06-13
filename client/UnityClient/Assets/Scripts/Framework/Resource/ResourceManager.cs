@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using GameFramework.Core.GameSystem;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -12,7 +12,7 @@ namespace GameClient.Framework.Resource
     public sealed class ResourceManager : GameModule
     {
         private readonly Dictionary<string, ResourceEntry> _cache = new();
-        private readonly Dictionary<string, Task<ResourceEntry>> _loadingTasks = new();
+        private readonly Dictionary<string, LoadingOperation> _loadingTasks = new();
         private IResourceProvider[] _providers = Array.Empty<IResourceProvider>();
         private IReadOnlyList<IResourceProvider> _providerView =
             Array.AsReadOnly(Array.Empty<IResourceProvider>());
@@ -78,11 +78,11 @@ namespace GameClient.Framework.Resource
         }
 
         [Obsolete("Use LoadHandleAsync<T> so the caller owns and releases the resource handle, or use ResourceScope/ResourceBinder for automatic lifetime management.", true)]
-        public async Task<T> LoadAsync<T>(
+        public async UniTask<T> LoadAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {
-            await Task.Yield();
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             throw new NotSupportedException("Use LoadHandleAsync<T> instead.");
         }
 
@@ -123,10 +123,12 @@ namespace GameClient.Framework.Resource
             }
         }
 
-        public async Task<ResourceHandle<T>> LoadHandleAsync<T>(
+        public async UniTask<ResourceHandle<T>> LoadHandleAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {
+            await UniTask.SwitchToMainThread(cancellationToken);
+
             var normalizedPath = NormalizePath(path);
             var key = BuildKey<T>(normalizedPath);
 
@@ -136,8 +138,10 @@ namespace GameClient.Framework.Resource
                 return CreateHandle<T>(cachedEntry);
             }
 
-            var loadingTask = GetOrCreateLoadTask<T>(key, normalizedPath);
-            var entry = await WaitForLoadAsync(loadingTask, cancellationToken);
+            var loadingOperation = GetOrCreateLoadOperation<T>(key, normalizedPath);
+            var entry = await WaitForSharedLoadAsync(loadingOperation, cancellationToken);
+
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             entry.RefCount++;
             return CreateHandle<T>(entry);
@@ -183,19 +187,37 @@ namespace GameClient.Framework.Resource
             Clear();
         }
 
-        private Task<ResourceEntry> GetOrCreateLoadTask<T>(
+        private LoadingOperation GetOrCreateLoadOperation<T>(
             string key,
             string normalizedPath) where T : Object
         {
-            if (_loadingTasks.TryGetValue(key, out var existingTask))
-                return existingTask;
+            if (_loadingTasks.TryGetValue(key, out var existingOperation))
+                return existingOperation;
 
-            var task = LoadEntryAsync<T>(key, normalizedPath, _version);
-            _loadingTasks[key] = task;
-            return task;
+            var operation = new LoadingOperation();
+            _loadingTasks[key] = operation;
+            RunLoadEntryAsync<T>(operation, key, normalizedPath, _version).Forget();
+            return operation;
         }
 
-        private async Task<ResourceEntry> LoadEntryAsync<T>(
+        private async UniTask RunLoadEntryAsync<T>(
+            LoadingOperation operation,
+            string key,
+            string normalizedPath,
+            int version) where T : Object
+        {
+            try
+            {
+                var entry = await LoadEntryAsync<T>(key, normalizedPath, version);
+                operation.TrySetResult(entry);
+            }
+            catch (Exception ex)
+            {
+                operation.TrySetException(ex);
+            }
+        }
+
+        private async UniTask<ResourceEntry> LoadEntryAsync<T>(
             string key,
             string normalizedPath,
             int version) where T : Object
@@ -241,21 +263,11 @@ namespace GameClient.Framework.Resource
             }
         }
 
-        private static async Task<T> WaitForLoadAsync<T>(
-            Task<T> task,
+        private static UniTask<ResourceEntry> WaitForSharedLoadAsync(
+            LoadingOperation operation,
             CancellationToken cancellationToken)
         {
-            if (!cancellationToken.CanBeCanceled || task.IsCompleted)
-                return await task;
-
-            var completionSource = new TaskCompletionSource<bool>();
-            using var registration = cancellationToken.Register(() => completionSource.TrySetResult(true));
-            var cancellationTask = completionSource.Task;
-            var completedTask = await Task.WhenAny(task, cancellationTask);
-            if (!ReferenceEquals(completedTask, task))
-                throw new OperationCanceledException(cancellationToken);
-
-            return await task;
+            return operation.Task.AttachExternalCancellation(cancellationToken);
         }
 
         private ResourceHandle<T> CreateHandle<T>(ResourceEntry entry) where T : Object
@@ -364,6 +376,23 @@ namespace GameClient.Framework.Resource
             public IResourceProvider Provider { get; }
             public object? ReleaseToken { get; }
             public int RefCount { get; set; }
+        }
+
+        private sealed class LoadingOperation
+        {
+            private readonly UniTaskCompletionSource<ResourceEntry> _completionSource = new();
+
+            public UniTask<ResourceEntry> Task => _completionSource.Task;
+
+            public void TrySetResult(ResourceEntry entry)
+            {
+                _completionSource.TrySetResult(entry);
+            }
+
+            public void TrySetException(Exception exception)
+            {
+                _completionSource.TrySetException(exception);
+            }
         }
     }
 }

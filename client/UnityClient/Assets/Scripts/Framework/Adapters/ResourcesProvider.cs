@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -52,10 +52,12 @@ namespace GameClient.Framework.Resource
             return new ResourceLoadResult<T>(typedAsset);
         }
 
-        public async Task<ResourceLoadResult<T>> LoadAsync<T>(
+        public async UniTask<ResourceLoadResult<T>> LoadAsync<T>(
             string path,
             CancellationToken cancellationToken = default) where T : Object
         {
+            await UniTask.SwitchToMainThread(cancellationToken);
+
             var assetType = typeof(T);
             if (!CanLoad(path, assetType))
                 throw new ResourceLoadException($"Unity Resources cannot load '{path}' as '{assetType.FullName}'.");
@@ -64,7 +66,7 @@ namespace GameClient.Framework.Resource
             while (!request.isDone)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Task.Yield();
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             }
 
             cancellationToken.ThrowIfCancellationRequested();

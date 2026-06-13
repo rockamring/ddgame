@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using GameFramework.Core.GameSystem;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +39,7 @@ namespace GameClient.Framework.Resource
             set { resourceManager = value ?? throw new ArgumentNullException(nameof(value)); }
         }
 
-        public async Task SetImageSpriteAsync(
+        public async UniTask SetImageSpriteAsync(
             Image image,
             string path,
             CancellationToken cancellationToken = default)
@@ -71,7 +71,7 @@ namespace GameClient.Framework.Resource
             ClearBinding(key);
         }
 
-        public async Task SetSpriteRendererSpriteAsync(
+        public async UniTask SetSpriteRendererSpriteAsync(
             SpriteRenderer spriteRenderer,
             string path,
             CancellationToken cancellationToken = default)
@@ -103,7 +103,7 @@ namespace GameClient.Framework.Resource
             ClearBinding(key);
         }
 
-        public Task SetMaterialTextureAsync(
+        public UniTask SetMaterialTextureAsync(
             Material material,
             string propertyName,
             string path,
@@ -115,7 +115,7 @@ namespace GameClient.Framework.Resource
             return SetMaterialTextureAsync(material, Shader.PropertyToID(propertyName), path, cancellationToken);
         }
 
-        public async Task SetMaterialTextureAsync(
+        public async UniTask SetMaterialTextureAsync(
             Material material,
             int propertyId,
             string path,
@@ -156,7 +156,7 @@ namespace GameClient.Framework.Resource
             ClearBinding(key);
         }
 
-        public Task SetRendererTextureAsync(
+        public UniTask SetRendererTextureAsync(
             Renderer renderer,
             string propertyName,
             string path,
@@ -168,7 +168,7 @@ namespace GameClient.Framework.Resource
             return SetRendererTextureAsync(renderer, Shader.PropertyToID(propertyName), path, cancellationToken);
         }
 
-        public async Task SetRendererTextureAsync(
+        public async UniTask SetRendererTextureAsync(
             Renderer renderer,
             int propertyId,
             string path,

@@ -14,6 +14,11 @@ namespace GameClient.Framework.Editor
 
             content = EnsureReference(
                 content,
+                "UniTask",
+                @"Library\ScriptAssemblies\UniTask.dll");
+
+            content = EnsureReference(
+                content,
                 "Unity.Addressables",
                 @"Library\ScriptAssemblies\Unity.Addressables.dll");
 

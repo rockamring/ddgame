@@ -2,6 +2,7 @@
     "name": "GameFramework.Runtime",
     "rootNamespace": "",
     "references": [
+        "UniTask",
         "Unity.Addressables",
         "Unity.ResourceManager"
     ],
