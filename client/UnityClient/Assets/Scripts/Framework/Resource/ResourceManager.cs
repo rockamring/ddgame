@@ -136,8 +136,8 @@ namespace GameClient.Framework.Resource
                 return CreateHandle<T>(cachedEntry);
             }
 
-            var loadingTask = GetOrCreateLoadTask<T>(key, normalizedPath, cancellationToken);
-            var entry = await loadingTask;
+            var loadingTask = GetOrCreateLoadTask<T>(key, normalizedPath);
+            var entry = await WaitForLoadAsync(loadingTask, cancellationToken);
 
             entry.RefCount++;
             return CreateHandle<T>(entry);
@@ -185,13 +185,12 @@ namespace GameClient.Framework.Resource
 
         private Task<ResourceEntry> GetOrCreateLoadTask<T>(
             string key,
-            string normalizedPath,
-            CancellationToken cancellationToken) where T : Object
+            string normalizedPath) where T : Object
         {
             if (_loadingTasks.TryGetValue(key, out var existingTask))
                 return existingTask;
 
-            var task = LoadEntryAsync<T>(key, normalizedPath, _version, cancellationToken);
+            var task = LoadEntryAsync<T>(key, normalizedPath, _version);
             _loadingTasks[key] = task;
             return task;
         }
@@ -199,14 +198,13 @@ namespace GameClient.Framework.Resource
         private async Task<ResourceEntry> LoadEntryAsync<T>(
             string key,
             string normalizedPath,
-            int version,
-            CancellationToken cancellationToken) where T : Object
+            int version) where T : Object
         {
             var provider = FindProvider(normalizedPath, typeof(T), requireSync: false);
 
             try
             {
-                var result = await provider.LoadAsync<T>(normalizedPath, cancellationToken);
+                var result = await provider.LoadAsync<T>(normalizedPath, CancellationToken.None);
 
                 if (version != _version)
                 {
@@ -241,6 +239,23 @@ namespace GameClient.Framework.Resource
             {
                 _loadingTasks.Remove(key);
             }
+        }
+
+        private static async Task<T> WaitForLoadAsync<T>(
+            Task<T> task,
+            CancellationToken cancellationToken)
+        {
+            if (!cancellationToken.CanBeCanceled || task.IsCompleted)
+                return await task;
+
+            var completionSource = new TaskCompletionSource<bool>();
+            using var registration = cancellationToken.Register(() => completionSource.TrySetResult(true));
+            var cancellationTask = completionSource.Task;
+            var completedTask = await Task.WhenAny(task, cancellationTask);
+            if (!ReferenceEquals(completedTask, task))
+                throw new OperationCanceledException(cancellationToken);
+
+            return await task;
         }
 
         private ResourceHandle<T> CreateHandle<T>(ResourceEntry entry) where T : Object
